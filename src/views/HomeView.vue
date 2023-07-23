@@ -67,9 +67,10 @@
 <el-footer>
   <el-switch style="padding:0 10px 0 10px;" active-color="#999" inactive-color="#1e1e1e" v-model="isDark" @change="changeTheme"></el-switch>
   <a href="https://beian.miit.gov.cn/" target="_blank">京ICP备2022010024号</a>
-  <a href="https://github.com/xdai555/" target="_blank"> @xdai555</a>
-  <a href="https://support.qq.com/products/447487/" target="_blank">意见反馈</a>
-  <a href="https://mp.weixin.qq.com/s/ZA_CXNL2O4zSGEpr26KV5A" target="_blank">@九净 带你学 TextFSM</a>
+  Copyright © <a href="https://github.com/xdai555/" target="_blank">@xdai555</a>
+  | <a href="https://mp.weixin.qq.com/s/ZA_CXNL2O4zSGEpr26KV5A" target="_blank">@NetDevOps加油站：深入浅出TextFSM 终极版教程</a>
+  | <a href="https://netaxe.github.io/" target="_blank">@iflytek/NetAxe：国产网络自动化领域解决方案框架</a>
+  | <a href="https://support.qq.com/products/447487/" target="_blank">意见反馈</a>
 
 </el-footer>
 </el-container>

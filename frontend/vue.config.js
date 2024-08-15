@@ -11,7 +11,7 @@ module.exports = defineConfig({
         test: /\.js$|\.html$|\.json$|\.css/,
         threshold: 10240, // 10k 以上文件压缩
         minRatio: 0.8,
-        deleteOriginalAssets: false // 不删除原文件
+        deleteOriginalAssets: true // 不删除原文件
       }))
       config.externals = {
         vue: 'Vue'

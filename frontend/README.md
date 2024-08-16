@@ -1,36 +1,41 @@
-# textfsm_online
+# textfsm_online_frontend
 
-## TextFSM 在线解析
-
-访问地址：http://textfsm.xdai.vip/
+http://textfsm.xdai.vip/
 
 
-## Project setup
+## 本地部署
 
-Dev env version:
+开发版本软件依赖：
 ```
-node==16.18.1
-npm==8.19.2
+node==16
+npm==8
 ```
+安装方法请参考 [Download Node.js®](https://nodejs.org/en/download/package-manager).
+
+### 克隆代码
+
+克隆代码到部署目录，例如 `/opt/textfsm_online`:
+```
+git clone --depth 1 https://github.com/xdai555/textfsm_online.git /opt/textfsm_online
+cd /opt/textfsm_online/frontend
+```
+
+### 安装依赖
 
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### 调试项目
+
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### 编译项目
+
 ```
 npm run build
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+运行完成后，生成 `dist` 目录，将该目录下的文件发布到网站根目录（例如 nginx）即可访问。

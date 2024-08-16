@@ -1,4 +1,5 @@
 import os
+import argparse
 import sqlite3
 from importlib.resources import path as importresources_path
 
@@ -74,15 +75,26 @@ def create_database(data, template_path, source="ntc-templates"):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Generate database from 'TextFSM Online'.")
+    parser.add_argument(
+        "--source",
+        type=str,
+        default="ntc-templates",
+        help="The source of the templates  (e.g., 'ntc-templates')."
+    )
+    parser.add_argument(
+        "--path",
+        type=str,
+        # 默认使用 pip 安装的 ntc-templates 的包路径生成数据
+        default=get_ntc_path(),
+        help="The path where the `index` file is located."
+    )
+    args = parser.parse_args()
+    source = args.source
+    index_path = args.path
     # ntc-templates 索引文件名称
     index_filename = "index"
-    # 如果需要使用本地源码包生成数据，需要手动配置一下路径
-    # 例如： git clone --depth=1 https://github.com/Elinpf/ntc-templates /tmp/
-    # index_path = "/tmp/ntc_templates/templates/"
-
-    # 使用 pip 安装的 ntc-templates 的包路径生成数据
-    index_path = get_ntc_path()
     file_path = os.path.join(index_path, index_filename)
     data = parse_index_file(file_path)
-    create_database(data, index_path, source="ntc-templates")
-    print("Create %s data(s) to 'textfsm_template.sqlite'." % len(data))
+    create_database(data, index_path, source=source)
+    print("Created %s data(s) to 'textfsm_template.sqlite'." % len(data))

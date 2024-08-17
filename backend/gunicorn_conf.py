@@ -23,7 +23,7 @@ accesslog = log_dir + "gunicorn_access.log"
 errorlog = log_dir + "gunicorn_error.log"
 
 # 监听地址:监听端口
-bind = "127.0.0.1:9999"
+bind = "0.0.0.0:9999"
 
 DB_PATH = "textfsm_template.sqlite"
 if not os.path.exists(DB_PATH):

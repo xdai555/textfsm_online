@@ -58,7 +58,7 @@ python3 init_db.py  --source Elinpf --path Elinpf/ntc_templates/templates
 
 ### 启动服务
 
-后端服务默认监听在本地 9999 端口。编辑 `gunicorn_conf.py` 中的 `bind = "127.0.0.1:9999"` 配置项进行修改。
+后端服务默认监听在 9999 端口。编辑 `gunicorn_conf.py` 中的 `bind = "0.0.0.0:9999"` 配置项进行修改。
 
 ```
 ./start_server.sh

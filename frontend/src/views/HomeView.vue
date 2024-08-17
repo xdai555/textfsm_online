@@ -141,7 +141,7 @@ export default {
   methods: {
     textFSMParser () {
       // 这里上线的时候需要改一下，防止跨域问题
-      axios.post('http://127.0.0.1:9999/api/parser', {
+      axios.post('/api/parser', {
       // axios.post('http://api.xdai.vip:9999/api/parser', {
         raw_text: this.raw_text,
         template_text: this.template_text
@@ -154,7 +154,7 @@ export default {
         })
     },
     getSourceList () {
-      axios.get('http://127.0.0.1:9999/api/getSourceList')
+      axios.get('/api/getSourceList')
       // axios.get('http://api.xdai.vip:9999/api/getSourceList')
         .then(response => {
           this.source_options = response.data.data.source_list
@@ -165,7 +165,7 @@ export default {
     },
     getPlatformList () {
       const source = this.source_value
-      axios.get('http://127.0.0.1:9999/api/getPlatformList', {
+      axios.get('/api/getPlatformList', {
       // axios.get('http://api.xdai.vip:9999/api/getPlatformList', {
         params: {
           source: source
@@ -181,7 +181,7 @@ export default {
     getTemplateList () {
       const platform = this.platform_value
       const source = this.source_value
-      axios.get('http://127.0.0.1:9999/api/getTemplateList', {
+      axios.get('/api/getTemplateList', {
       // axios.get('http://api.xdai.vip:9999/api/getTemplateList', {
         params: {
           platform: platform,
@@ -198,7 +198,7 @@ export default {
     loadTemplate () {
       const template = this.template_value
       const source = this.source_value
-      axios.get('http://127.0.0.1:9999/api/loadTemplate', {
+      axios.get('/api/loadTemplate', {
       // axios.get('http://api.xdai.vip:9999/api/loadTemplate', {
         params: {
           template: template,

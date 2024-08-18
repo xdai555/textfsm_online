@@ -12,6 +12,7 @@ services:
       - textfsm_online_network
     depends_on:
       - textfsm_online_backend
+    restart: always
 
   textfsm_online_backend:
     build:
@@ -22,6 +23,7 @@ services:
       - "9999:9999"
     networks:
       - textfsm_online_network
+    restart: always
 
 networks:
   textfsm_online_network:

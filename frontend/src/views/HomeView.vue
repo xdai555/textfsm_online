@@ -9,7 +9,7 @@
     <br/>
     两者在支持的模板数量、具体的模板内容上会有差异，请根据实际情况使用或者修改<br/>
   </div>
-  <div style="display: inline;margin-right: 10px;"><i class="el-icon-info"></i></div>
+  <div style="display: inline;margin-right: 10px;"><a><i class="el-icon-info"></i></a></div>
 </el-tooltip>
 
   <el-select
@@ -61,8 +61,17 @@
   </el-select>
 
 <div style="display: inline;float: right;margin-right: 20px;">
-  <el-button size="small" type="info" plain @click="horizontal = !horizontal">切换显示方向</el-button>
+  <!-- <div style="display: inline;margin-right: 10px;"> -->
+  <el-tooltip placement="top" effect="light">
+  <div slot="content">
+    本站点支持本地部署，点击查看：<a href="https://github.com/xdai555/textfsm_online" target="_blank">GitHub</a>、<a href="https://gitee.com/xdai555/textfsm_online" target="_blank">Gitee</a><br/>
+    有人知道三个文本输入窗口之间的分割条，一直以来是支持 <span style="color: red;">拖动</span> 和 <span style="color: red;">双击</span> 的吗？<br/>
+  </div>
+  <div style="display: inline;margin-right: 10px;"><a><i class="el-icon-info"></i></a></div>
+  </el-tooltip>
+  <el-button size="small" type="info" plain @click="horizontal = !horizontal">切换方向</el-button>
   <el-input-number v-model="fontSize" :min="12" :max="50" size="small"></el-input-number>
+<!-- </div> -->
 </div>
 
 </div>
@@ -94,7 +103,7 @@
 <el-footer>
   <el-switch style="padding:0 10px 0 10px;" active-color="#999" inactive-color="#1e1e1e" v-model="isDark" @change="changeTheme"></el-switch>
   <a href="https://beian.miit.gov.cn/" target="_blank">京ICP备2022010024号</a>
-  Copyright © <a href="https://github.com/xdai555/" target="_blank">@xdai555</a>
+  <a href="https://github.com/xdai555/" target="_blank">Copyright © @xdai555</a>
   | <a href="https://mp.weixin.qq.com/s/ZA_CXNL2O4zSGEpr26KV5A" target="_blank">@NetDevOps加油站：深入浅出TextFSM 终极版教程</a>
   | <a href="https://netaxe.github.io/" target="_blank">@iflytek/NetAxe：国产网络自动化领域解决方案框架</a>
   | <a href="https://support.qq.com/products/447487/" target="_blank">意见反馈</a>
@@ -141,7 +150,7 @@ export default {
   methods: {
     textFSMParser () {
       // 这里上线的时候需要改一下，防止跨域问题
-      // axios.post('http://127.0.0.1:8000/api/parser', {
+      // axios.post('/api/parser', {
       axios.post('http://api.xdai.vip:9999/api/parser', {
         raw_text: this.raw_text,
         template_text: this.template_text
@@ -154,7 +163,7 @@ export default {
         })
     },
     getSourceList () {
-      // axios.get('http://127.0.0.1:8000/api/getSourceList')
+      // axios.get('/api/getSourceList')
       axios.get('http://api.xdai.vip:9999/api/getSourceList')
         .then(response => {
           this.source_options = response.data.data.source_list
@@ -165,7 +174,7 @@ export default {
     },
     getPlatformList () {
       const source = this.source_value
-      // axios.get('http://127.0.0.1:8000/api/getPlatformList', {
+      // axios.get('/api/getPlatformList', {
       axios.get('http://api.xdai.vip:9999/api/getPlatformList', {
         params: {
           source: source
@@ -181,7 +190,7 @@ export default {
     getTemplateList () {
       const platform = this.platform_value
       const source = this.source_value
-      // axios.get('http://127.0.0.1:8000/api/getTemplateList', {
+      // axios.get('/api/getTemplateList', {
       axios.get('http://api.xdai.vip:9999/api/getTemplateList', {
         params: {
           platform: platform,
@@ -198,7 +207,7 @@ export default {
     loadTemplate () {
       const template = this.template_value
       const source = this.source_value
-      // axios.get('http://127.0.0.1:8000/api/loadTemplate', {
+      // axios.get('/api/loadTemplate', {
       axios.get('http://api.xdai.vip:9999/api/loadTemplate', {
         params: {
           template: template,

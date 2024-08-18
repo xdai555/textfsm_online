@@ -17,7 +17,7 @@ npm==8
 克隆代码到部署目录，例如 `/opt/textfsm_online`:
 ```
 git clone --depth 1 https://github.com/xdai555/textfsm_online.git /opt/textfsm_online
-cd /opt/textfsm_online/frontend
+cd /opt/textfsm_online/web
 ```
 
 ### 安装依赖

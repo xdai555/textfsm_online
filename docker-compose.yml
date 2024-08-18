@@ -1,0 +1,28 @@
+version: '3.3'
+
+services:
+  textfsm_online_web:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/web_dockerfile
+    container_name: textfsm_online_web
+    ports:
+      - "8080:80"
+    networks:
+      - textfsm_online_network
+    depends_on:
+      - textfsm_online_backend
+
+  textfsm_online_backend:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/backend_dockerfile
+    container_name: textfsm_online_backend
+    ports:
+      - "9999:9999"
+    networks:
+      - textfsm_online_network
+
+networks:
+  textfsm_online_network:
+    driver: bridge

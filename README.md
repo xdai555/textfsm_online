@@ -13,10 +13,10 @@ https://textfsm.xdai.vip/
     sudo apt-get install docker-compose
     ```
 
-2. 克隆本仓库
+2. 克隆本仓库及其子模块
 
     ```
-    git clone https://github.com/xdai555/textfsm_online.git
+    git clone --recurse-submodules https://github.com/xdai555/textfsm_online.git
     ```
 
 3. 构建并启动容器

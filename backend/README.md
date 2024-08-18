@@ -7,9 +7,9 @@ https://textfsm.xdai.vip/
 
 ### 克隆代码
 
-克隆代码到部署目录，例如 `/opt/textfsm_online`:
+克隆代码及其子模块到部署目录，例如 `/opt/textfsm_online`:
 ```
-git clone --depth 1 https://github.com/xdai555/textfsm_online.git /opt/textfsm_online
+git clone --depth 1 --recurse-submodules https://github.com/xdai555/textfsm_online.git /opt/textfsm_online
 cd /opt/textfsm_online/backend
 ```
 
@@ -27,7 +27,7 @@ pip install -r requirements.txt
 ```
 
 ### 初始化数据库
-运行 `python init_db.py` 初始化数据库，运行完成后会在本地目录生成 textfsm_template.sqlite，服务端时会读取该文件。
+运行 `python3 init_db.py` 初始化数据库，运行完成后会在本地目录生成 textfsm_template.sqlite，服务端时会读取该文件。
 
 初始化脚本不加任何参数运行时，默认写入 pip 安装好的 ntc-templates 模板。
 
@@ -50,8 +50,7 @@ optional arguments:
 例如，添加 [@Elinpf](https://github.com/Elinpf/ntc-templates.git) 维护的国内厂商模板到数据库：
 
 ```
-git clone --depth=1  https://github.com/Elinpf/ntc-templates.git Elinpf
-python3 init_db.py  --source Elinpf --path Elinpf/ntc_templates/templates
+python3 init_db.py --source Elinpf --path Elinpf/ntc_templates/templates
 ```
 
 运行后回显：`Created 627 data(s) to 'textfsm_template.sqlite'.` 表示成功写入 627 条模板内容。

@@ -1,4 +1,4 @@
-FROM node:16 AS build
+FROM node:16-slim AS build
 WORKDIR /app
 COPY web/ .
 RUN npm config set registry https://registry.npmmirror.com && \

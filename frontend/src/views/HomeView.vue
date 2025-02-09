@@ -12,6 +12,32 @@
   <div style="display: inline;margin-right: 10px;"><a><i class="el-icon-info"></i></a></div>
 </el-tooltip>
 
+    <!-- 弹窗提示 -->
+    <el-dialog
+      title="广而告之——书籍推荐《Python网络运维自动化》"
+      :visible.sync="showWelcomeDialog"
+      width="40%"
+      :before-close="handleClose"
+    >
+      <div class="welcome-content">
+        <p>💪公众号 @NetDevOps加油站 九净老师出品</p>
+        <p>📢网络工程师升级必读</p>
+        <p>🔥十余年 NetDevOps 实战经验全公开</p>
+        <p>📖历时 4 轮迭代重构</p>
+        <p>🤞浓缩 40 万字手稿精华</p>
+        <p>✅零基础到实战</p>
+        <p>💻文/图/代码三结合</p>
+        <p>❗限时福利（至2025年3月底）</p>
+        <p>
+          🚀京东自营 6 折特惠（全渠道最低！）
+          <a href="https://item.jd.com/14933970.html" target="_blank">点击购买</a>
+        </p>
+
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" size="small" @click="handleClose">知道了，这就去下单</el-button>
+      </span>
+    </el-dialog>
   <el-select
     style="width:15%;"
     v-model="source_value"
@@ -126,6 +152,7 @@ import 'splitpanes/dist/splitpanes.css'
 export default {
   data () {
     return {
+      showWelcomeDialog: false, // 控制弹窗显示
       fontSize: 13,
       raw_text: '',
       template_text: '',
@@ -147,7 +174,22 @@ export default {
     }
   },
   created () { this.getSourceList() },
+  mounted() {
+    this.checkFirstVisit();
+  },
   methods: {
+    // 检查是否是第一次访问
+    checkFirstVisit() {
+      const hasVisited = localStorage.getItem('hasVisited');
+      if (!hasVisited) {
+        this.showWelcomeDialog = true; // 显示弹窗
+        localStorage.setItem('hasVisited', 'true'); // 设置标记
+      }
+    },
+    // 关闭弹窗
+    handleClose() {
+      this.showWelcomeDialog = false;
+    },
     textFSMParser () {
       // 这里上线的时候需要改一下，防止跨域问题
       // axios.post('/api/parser', {
@@ -239,6 +281,28 @@ export default {
 </script>
 
 <style>
+/* 新增样式：使关闭按钮居中 */
+.dialog-footer {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+}
+
+.welcome-content {
+  line-height: 1.8; /* 调整行高 */
+}
+
+.welcome-content p {
+  margin: 0; /* 去除默认段落间距 */
+}
+
+.welcome-content a {
+  color: #409eff; /* Element UI 主题色 */
+  text-decoration: none; /* 去除下划线 */
+}
+
+.welcome-content a:hover {
+  text-decoration: underline; /* 鼠标悬停时显示下划线 */
+}
   .darkMode {
     background: #1e1e1e;
   }

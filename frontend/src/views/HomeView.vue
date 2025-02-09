@@ -1,6 +1,7 @@
 <template>
 <el-container :class="{ darkMode: isDark}">
   <div style="padding-top: 5px;text-align:center;display: inline;">
+
   <!-- <span>加载已有模板：</span> -->
   <el-tooltip placement="top" effect="light">
   <div slot="content">
@@ -95,6 +96,7 @@
   </div>
   <div style="display: inline;margin-right: 10px;"><a><i class="el-icon-info"></i></a></div>
   </el-tooltip>
+  <el-button size="small" type="info" plain @click="showWelcomeDialog = true">书籍推荐</el-button>
   <el-button size="small" type="info" plain @click="horizontal = !horizontal">切换方向</el-button>
   <el-input-number v-model="fontSize" :min="12" :max="50" size="small"></el-input-number>
 <!-- </div> -->

@@ -28,7 +28,6 @@
         <p>🤞浓缩 40 万字手稿精华</p>
         <p>✅零基础到实战</p>
         <p>💻文/图/代码三结合</p>
-        <p>❗限时福利（至2025年3月底）</p>
         <p>
           🚀京东自营 6 折特惠（全渠道最低！）
           <a href="https://item.jd.com/14933970.html" target="_blank">点击购买</a>
@@ -149,6 +148,7 @@ import 'codemirror/addon/display/placeholder.js'
 import 'codemirror/theme/idea.css'
 import 'codemirror/theme/darcula.css'
 import 'splitpanes/dist/splitpanes.css'
+import config from '@/utils/config'
 // import FilterableSelect from '../components/FilterableSelect.vue'
 
 export default {
@@ -193,9 +193,7 @@ export default {
       this.showWelcomeDialog = false;
     },
     textFSMParser () {
-      // 这里上线的时候需要改一下，防止跨域问题
-      // axios.post('/api/parser', {
-      axios.post('http://api.xdai.vip:9999/api/parser', {
+      axios.post(`${config.API_BASE_URL}/api/parser`, {
         raw_text: this.raw_text,
         template_text: this.template_text
       })
@@ -207,8 +205,7 @@ export default {
         })
     },
     getSourceList () {
-      // axios.get('/api/getSourceList')
-      axios.get('http://api.xdai.vip:9999/api/getSourceList')
+      axios.get(`${config.API_BASE_URL}/api/getSourceList`)
         .then(response => {
           this.source_options = response.data.data.source_list
         })
@@ -218,8 +215,7 @@ export default {
     },
     getPlatformList () {
       const source = this.source_value
-      // axios.get('/api/getPlatformList', {
-      axios.get('http://api.xdai.vip:9999/api/getPlatformList', {
+      axios.get(`${config.API_BASE_URL}/api/getPlatformList`, {
         params: {
           source: source
         }
@@ -234,8 +230,7 @@ export default {
     getTemplateList () {
       const platform = this.platform_value
       const source = this.source_value
-      // axios.get('/api/getTemplateList', {
-      axios.get('http://api.xdai.vip:9999/api/getTemplateList', {
+      axios.get(`${config.API_BASE_URL}/api/getTemplateList`, {
         params: {
           platform: platform,
           source: source
@@ -251,8 +246,7 @@ export default {
     loadTemplate () {
       const template = this.template_value
       const source = this.source_value
-      // axios.get('/api/loadTemplate', {
-      axios.get('http://api.xdai.vip:9999/api/loadTemplate', {
+      axios.get(`${config.API_BASE_URL}/api/loadTemplate`, {
         params: {
           template: template,
           source: source

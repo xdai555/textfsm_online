@@ -15,24 +15,44 @@
 
     <!-- 弹窗提示 -->
     <el-dialog
-      title="广而告之——书籍推荐《Python网络运维自动化》"
+      title="广而告之——书籍推荐"
       :visible.sync="showWelcomeDialog"
-      width="40%"
+      width="50%"
       :before-close="handleClose"
     >
       <div class="welcome-content">
-        <p>💪公众号 @NetDevOps加油站 九净老师出品</p>
-        <p>📢网络工程师升级必读</p>
-        <p>🔥十余年 NetDevOps 实战经验全公开</p>
-        <p>📖历时 4 轮迭代重构</p>
-        <p>🤞浓缩 40 万字手稿精华</p>
-        <p>✅零基础到实战</p>
-        <p>💻文/图/代码三结合</p>
-        <p>
-          🚀京东自营 6 折特惠（全渠道最低！）
-          <a href="https://item.jd.com/14933970.html" target="_blank">点击购买</a>
-        </p>
-
+        <div style="display: flex; gap: 20px;">
+          <!-- 第一栏：Python网络运维自动化 -->
+          <div style="flex: 1; border-right: 1px solid #eee; padding-right: 20px;">
+            <h3 style="color: #409eff; margin-top: 0;">《Python网络运维自动化》</h3>
+            <p>💪公众号 @NetDevOps加油站 九净老师出品</p>
+            <p>📢网络工程师升级必读</p>
+            <p>🔥十余年 NetDevOps 实战经验全公开</p>
+            <p>📖历时 4 轮迭代重构</p>
+            <p>🤞浓缩 40 万字手稿精华</p>
+            <p>✅零基础到实战</p>
+            <p>💻文/图/代码三结合</p>
+            <p>
+              🚀京东自营，特惠购买，快快下单！
+              <a href="https://item.jd.com/14933970.html" target="_blank">点击购买</a>
+            </p>
+          </div>
+          
+          <!-- 第二栏：网络工程师的AI之路 -->
+          <div style="flex: 1; padding-left: 20px;">
+            <h3 style="color: #67c23a; margin-top: 0;">《网络工程师的AI之路：基于大语言模型的运维实战》</h3>
+            <p>🚀首部LLM网络运维实战指南，让AI从"黑科技"变成工程师的高效工具！</p>
+            <p>🔧详解LangChain模块，教你集成LLM构建智能运维工具链</p>
+            <p>🌐支持云端ChatGPT与本地LLaMA/DeepSeek等模型，满足不同需求</p>
+            <p>📚采用RAG技术，通过外部知识库提升LLM应答准确性</p>
+            <p>🛠️运用MCP策略实现多模型协作，优化复杂问题处理流程</p>
+            <p>💡真实案例覆盖配置生成、日志分析等场景，提供可复现代码</p>
+            <p>
+              🚀京东自营，特惠购买，快快下单！
+              <a href="https://u.jd.com/YDwsheV" target="_blank">点击购买</a>
+            </p>
+          </div>
+        </div>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" size="small" @click="handleClose">知道了，这就去下单</el-button>

@@ -200,12 +200,42 @@ export default {
     this.checkFirstVisit();
   },
   methods: {
-    // 检查是否是第一次访问
+    // 检查是否是第一次访问（15天过期）
     checkFirstVisit() {
-      const hasVisited = localStorage.getItem('hasVisited');
-      if (!hasVisited) {
-        this.showWelcomeDialog = true; // 显示弹窗
-        localStorage.setItem('hasVisited', 'true'); // 设置标记
+      const now = new Date();
+      const visitData = localStorage.getItem('visitData');
+      
+      if (visitData) {
+        try {
+          const data = JSON.parse(visitData);
+          const expiry = new Date(data.expiry);
+          
+          if (now > expiry) {
+            // 已过期，重新显示弹窗并更新过期时间
+            this.showWelcomeDialog = true;
+            const newExpiry = new Date(now.getTime() + 15 * 24 * 60 * 60 * 1000);
+            localStorage.setItem('visitData', JSON.stringify({
+              visited: true,
+              expiry: newExpiry.toISOString()
+            }));
+          }
+        } catch (e) {
+          // 处理可能的JSON解析错误
+          this.showWelcomeDialog = true;
+          const expiry = new Date(now.getTime() + 15 * 24 * 60 * 60 * 1000);
+          localStorage.setItem('visitData', JSON.stringify({
+            visited: true,
+            expiry: expiry.toISOString()
+          }));
+        }
+      } else {
+        // 首次访问
+        this.showWelcomeDialog = true;
+        const expiry = new Date(now.getTime() + 15 * 24 * 60 * 60 * 1000);
+        localStorage.setItem('visitData', JSON.stringify({
+          visited: true,
+          expiry: expiry.toISOString()
+        }));
       }
     },
     // 关闭弹窗

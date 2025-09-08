@@ -55,12 +55,32 @@ def create_database(data, template_path, source="ntc-templates"):
                     Platform TEXT NOT NULL,
                     Context TEXT NOT NULL,
                     Source TEXT DEFAULT '%s',
-                    Created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    Modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    Created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    Modified_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                     UNIQUE (Source, Template)
                 )"""
         % source
     )
+
+    # 创建分享表，使用DATETIME类型处理时间字段
+    # id字段作为主键，用于唯一标识分享记录
+    # raw_text字段存储原始文本内容
+    # template_text字段存储模版文本内容
+    # source_value, platform_value, template_value字段存储相关信息
+    # created_at字段使用DEFAULT CURRENT_TIMESTAMP自动记录创建时间
+    # expires_at字段存储分享链接的过期时间
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS shares (
+            id TEXT PRIMARY KEY,
+            raw_text TEXT NOT NULL,
+            template_text TEXT NOT NULL,
+            source_value TEXT,
+            platform_value TEXT,
+            template_value TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            expires_at DATETIME
+        )
+    """)
 
     # 写入数据
     for template, platform in data:
@@ -86,3 +106,4 @@ if __name__ == "__main__":
     data = parse_index_file(file_path)
     create_database(data, index_path, source="ntc-templates")
     print("Create %s data(s) to 'textfsm_template.sqlite'." % len(data))
+    print("Database tables 'templates' and 'shares' created successfully.")

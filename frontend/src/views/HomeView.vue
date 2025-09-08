@@ -33,7 +33,7 @@
             <p>✅零基础到实战</p>
             <p>💻文/图/代码三结合</p>
             <p>
-              🚀京东自营，特惠购买，快快下单！
+              🚀京东自营，特惠购买，赶快下单吧！
               <a href="https://item.jd.com/14933970.html" target="_blank">点击购买</a>
             </p>
           </div>
@@ -48,7 +48,7 @@
             <p>🛠️运用MCP策略实现多模型协作，优化复杂问题处理流程</p>
             <p>💡真实案例覆盖配置生成、日志分析等场景，提供可复现代码</p>
             <p>
-              🚀京东自营，特惠购买，快快下单！
+              🚀京东自营，特惠购买，赶快下单吧！
               <a href="https://u.jd.com/YDwsheV" target="_blank">点击购买</a>
             </p>
           </div>
@@ -58,6 +58,36 @@
         <el-button type="primary" size="small" @click="handleClose">知道了，这就去下单</el-button>
       </span>
     </el-dialog>
+    
+    <!-- 分享链接弹窗 -->
+    <el-dialog
+      title="分享链接"
+      :visible.sync="showShareDialog"
+      width="50%"
+      :before-close="handleShareClose"
+      :closeOnClickModal="false"
+    >
+      <div class="share-content">
+        <p>以下是您的分享链接，请复制并保存</p>
+        <el-input v-model="shareLink" readonly style="width: 70%;">
+          <template slot="append">
+            <el-button type="primary" @click="copyShareLink">复制链接</el-button>
+          </template>
+        </el-input>
+        <pre style="margin-top: 15px;">
+          创建时间 <el-tag size="small" type="success">{{ formatLocalTime(createdAt) }}</el-tag> 有效期 <el-tag size="small" type="warning">30天</el-tag> 该链接将在 <el-tag size="small" type="danger">{{ formatLocalTime(expiresAt) }}</el-tag> 过期。
+        </pre>
+        <pre style="margin-top: 5px; font-size: 12px; font-style: italic; position: relative; top: 10px;">
+          当前分享链接仅用于临时存储，所有人都可更新内容，请勿将链接分享给非信任用户，否则可能导致数据泄露。
+          如需更新内容或延长有效期，请在分享链接页面重新点击 生成分享链接 按钮。
+        </pre>
+
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" size="small" @click="handleShareClose">确定</el-button>
+      </span>
+    </el-dialog>
+    
   <el-select
     style="width:15%;"
     v-model="source_value"
@@ -115,8 +145,9 @@
   </div>
   <div style="display: inline;margin-right: 10px;"><a><i class="el-icon-info"></i></a></div>
   </el-tooltip>
-  <el-button size="small" type="info" plain @click="showWelcomeDialog = true">书籍推荐</el-button>
-  <el-button size="small" type="info" plain @click="horizontal = !horizontal">切换方向</el-button>
+  <el-button size="small" type="primary" plain @click="generateShareLink">生成分享链接</el-button>
+  <el-button size="small" type="success" plain @click="showWelcomeDialog = true">书籍推荐</el-button>
+  <el-button size="small" type="warning" plain @click="horizontal = !horizontal">切换方向</el-button>
   <el-input-number v-model="fontSize" :min="12" :max="50" size="small"></el-input-number>
 <!-- </div> -->
 </div>
@@ -169,12 +200,15 @@ import 'codemirror/theme/idea.css'
 import 'codemirror/theme/darcula.css'
 import 'splitpanes/dist/splitpanes.css'
 import config from '@/utils/config'
+import moment from 'moment'
 // import FilterableSelect from '../components/FilterableSelect.vue'
 
 export default {
   data () {
     return {
-      showWelcomeDialog: false, // 控制弹窗显示
+      showWelcomeDialog: false,  // 控制弹窗显示
+      showShareDialog: false,    // 控制分享弹窗显示
+      shareLink: '',             // 分享链接
       fontSize: 13,
       raw_text: '',
       template_text: '',
@@ -192,14 +226,151 @@ export default {
       platform_value: '',
       template_options: [],
       template_value: '',
-      horizontal: false
+      horizontal: false,
+      shareId: null,  // 当前页面的分享ID（如果从分享链接打开）
+      expiresAt: null, // 分享链接过期时间
+      createdAt: null  // 分享链接创建时间
     }
   },
-  created () { this.getSourceList() },
+  created () { 
+    this.getSourceList();
+    this.checkShareId();  // 检查是否有分享ID
+  },
   mounted() {
     this.checkFirstVisit();
   },
   methods: {
+    // 检查URL中是否包含分享ID
+    checkShareId() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const shareId = urlParams.get('shareId');
+      if (shareId) {
+        this.shareId = shareId;
+        this.loadShareData(shareId);
+      }
+    },
+    
+    // 加载分享数据
+    loadShareData(shareId) {
+      axios.get(`${config.API_BASE_URL}/api/getShare/${shareId}`)
+        .then(response => {
+          if (response.data.error) {
+            console.error('分享链接不存在或已过期');
+            this.$message.error('分享链接不存在或已过期');
+            console.error('加载分享数据失败:', response.data.error);
+            return;
+          }
+          
+          this.raw_text = response.data.raw_text || '';
+          this.template_text = response.data.template_text || '';
+          this.source_value = response.data.source_value || '';
+          this.platform_value = response.data.platform_value || '';
+          this.template_value = response.data.template_value || '';
+          // 直接使用后端返回的格式化过期时间
+          this.expiresAt = response.data.expires_at;
+          // 处理创建时间
+          this.createdAt = response.data.created_at;
+          
+          // 如果有platform_value，获取对应的模板列表
+          if (this.platform_value && this.source_value) {
+            this.getTemplateList();
+          }
+          
+          // 触发一次解析
+          this.textFSMParser();
+        })
+        .catch(error => {
+          this.$message.error('加载分享数据出错');
+          console.error('加载分享数据出错:', error);
+        });
+    },
+    
+    // 生成分享链接
+    generateShareLink() {
+      const shareData = {
+        raw_text: this.raw_text,
+        template_text: this.template_text,
+        source_value: this.source_value,
+        platform_value: this.platform_value,
+        template_value: this.template_value
+      };
+      
+      // 如果当前页面是通过分享链接访问的，则更新分享链接；否则创建新的分享链接
+      if (this.shareId) {
+        // 更新分享链接
+        axios.post(`${config.API_BASE_URL}/api/updateShare/${this.shareId}`, shareData)
+          .then(response => {
+            if (response.data && response.data.share_id) {
+              this.shareLink = `${window.location.origin}${window.location.pathname}?shareId=${this.shareId}`;
+              // 直接使用后端返回的格式化过期时间
+              this.expiresAt = response.data.expires_at;
+              // 处理创建时间
+              this.createdAt = response.data.created_at;
+              this.showShareDialog = true;
+            } else {
+              console.error('更新分享链接失败:', response.data);
+              this.$message.error('更新分享链接失败，请重试！');
+            }
+          })
+          .catch(error => {
+            this.$message.error('更新分享链接失败，请重试！');
+            console.error('更新分享链接失败:', error);
+          });
+      } else {
+        // 创建新的分享链接
+        axios.post(`${config.API_BASE_URL}/api/createShare`, shareData)
+          .then(response => {
+            if (response.data && response.data.share_id) {
+              const shareId = response.data.share_id;
+              this.shareLink = `${window.location.origin}${window.location.pathname}?shareId=${shareId}`;
+              // 直接使用后端返回的格式化过期时间
+              this.expiresAt = response.data.expires_at;
+              // 处理创建时间
+              this.createdAt = response.data.created_at;
+              this.showShareDialog = true;
+            } else {
+              console.error('生成分享链接失败:', response.data);
+              this.$message.error('生成分享链接失败，请重试！');
+            }
+          })
+          .catch(error => {
+            this.$message.error('生成分享链接失败，请重试！');
+            console.error('生成分享链接失败:', error);
+          });
+      }
+    },
+    
+    // 复制分享链接到剪贴板
+    copyShareLink() {
+      navigator.clipboard.writeText(this.shareLink).then(() => {
+        this.$message.success('复制成功，请手动关闭弹窗');
+        console.log('复制成功:', this.shareLink);
+      }).catch(() => {
+        this.$message.error('复制失败，请手动复制链接');
+        console.error('复制失败');
+      });
+    },
+    
+    // 关闭分享弹窗
+    handleShareClose() {
+      this.showShareDialog = false;
+      // 不要清空shareLink，让用户还能看到链接
+    },
+
+    // 格式化为本地时间显示
+    formatLocalTime(dateTimeStr) {
+      if (!dateTimeStr) return '未知';
+      
+      // 使用moment解析时间并转换为本地时间
+      const localTime = moment.utc(dateTimeStr).local();
+      
+      // 检查日期是否有效
+      if (!localTime.isValid()) return '无效时间';
+      
+      // 格式化为 YYYY-MM-DD HH:MM:SS 格式
+      return localTime.format('YYYY-MM-DD HH:mm:ss');
+    },
+
     // 检查是否是第一次访问（15天过期）
     checkFirstVisit() {
       const now = new Date();

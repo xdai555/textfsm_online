@@ -1,10 +1,11 @@
 import os
 import sqlite3
+import argparse
 from importlib.resources import path as importresources_path
 
 
 def get_ntc_path(package="ntc_templates"):
-    """获取通过 pip 安装的 ntc-templates 包路径"""
+    """get default ntc-templates package path"""
     with importresources_path(package=package, resource="templates") as posix_path:
         # Example: /opt/venv/netmiko/lib/python3.8/site-packages/ntc_templates/templates
         template_dir = str(posix_path)
@@ -16,7 +17,7 @@ def get_ntc_path(package="ntc_templates"):
 
 
 def parse_index_file(file_path):
-    """解析索引文件并提取每一行的 "Template, Platform" 数据"""
+    """Parse index file and extract "Template, Platform" data"""
     data = []
     with open(file_path, "r") as file:
         lines = file.readlines()
@@ -32,7 +33,7 @@ def parse_index_file(file_path):
 
 
 def _read_context(file_path, template_filename):
-    """根据给定的文件路径读取模版文本内容"""
+    """Read template context from file"""
     template_file = os.path.join(file_path, f"{template_filename}")
     with open(template_file, "r") as file:
         context = file.read()
@@ -40,14 +41,14 @@ def _read_context(file_path, template_filename):
 
 
 def create_database(data, template_path, source="ntc-templates"):
-    """从给定模版路径中读取模版文本内容并写入本地数据库"""
+    """Create database from template data"""
     db_filename = "textfsm_template.sqlite"
     db_path = os.path.join("./", db_filename)
 
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
 
-    # 初始化数据库
+    # create templates table
     cursor.execute(
         """CREATE TABLE IF NOT EXISTS templates (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -62,13 +63,7 @@ def create_database(data, template_path, source="ntc-templates"):
         % source
     )
 
-    # 创建分享表，使用DATETIME类型处理时间字段
-    # id字段作为主键，用于唯一标识分享记录
-    # raw_text字段存储原始文本内容
-    # template_text字段存储模版文本内容
-    # source_value, platform_value, template_value字段存储相关信息
-    # created_at字段使用DEFAULT CURRENT_TIMESTAMP自动记录创建时间
-    # expires_at字段存储分享链接的过期时间
+    # create shares table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS shares (
             id TEXT PRIMARY KEY,
@@ -82,7 +77,7 @@ def create_database(data, template_path, source="ntc-templates"):
         )
     """)
 
-    # 写入数据
+    # write data to database
     for template, platform in data:
         context = _read_context(template_path, template)
         cursor.execute(
@@ -94,16 +89,39 @@ def create_database(data, template_path, source="ntc-templates"):
 
 
 if __name__ == "__main__":
-    # ntc-templates 索引文件名称
+    parser = argparse.ArgumentParser(
+        description="Generate database from 'TextFSM Online'.",
+        epilog="""
+Examples:
+  # Using default ntc-templates package
+  python3 init_db.py
+  
+  # Use custom ntc-templates
+  python3 init_db.py --source my-templates --path /path/to/templates
+  e.g.
+  git clone --depth=1 https://github.com/Elinpf/ntc-templates /tmp/
+  python3 init_db.py --source Elinpf --path /tmp/ntc_templates/templates
+""",
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        "--source",
+        type=str,
+        default="ntc-templates",
+        help="The source name for the templates (e.g., 'ntc-templates', 'my-templates', etc.)"
+    )
+    parser.add_argument(
+        "--path",
+        type=str,
+        default=get_ntc_path(),
+        help="The path where the 'index' file is located"
+    )
+    args = parser.parse_args()
+    source = args.source
+    index_path = args.path
+    # ntc-templates index name is 'index'
     index_filename = "index"
-    # 如果需要使用本地源码包生成数据，需要手动配置一下路径
-    # 例如： git clone --depth=1 https://github.com/Elinpf/ntc-templates /tmp/
-    # index_path = "/tmp/ntc_templates/templates/"
-
-    # 使用 pip 安装的 ntc-templates 的包路径生成数据
-    index_path = get_ntc_path()
     file_path = os.path.join(index_path, index_filename)
     data = parse_index_file(file_path)
-    create_database(data, index_path, source="ntc-templates")
-    print("Create %s data(s) to 'textfsm_template.sqlite'." % len(data))
-    print("Database tables 'templates' and 'shares' created successfully.")
+    create_database(data, index_path, source=source)
+    print("Created %s data(s) to 'textfsm_template.sqlite'." % len(data))

@@ -75,11 +75,12 @@
           </template>
         </el-input>
         <pre style="margin-top: 15px;">
-          创建时间 <el-tag size="small" type="success">{{ formatLocalTime(createdAt) }}</el-tag> 有效期 <el-tag size="small" type="warning">30天</el-tag> 该链接将在 <el-tag size="small" type="danger">{{ formatLocalTime(expiresAt) }}</el-tag> 过期。
+          创建时间 <el-tag size="small" type="success">{{ formatLocalTime(createdAt) }}</el-tag>，过期时间 <el-tag size="small" type="danger">{{ formatLocalTime(expiresAt) }}</el-tag>。
         </pre>
         <pre style="margin-top: 5px; font-size: 12px; font-style: italic; position: relative; top: 10px;">
           当前分享链接仅用于临时存储，所有人都可更新内容，请勿将链接分享给非信任用户，否则可能导致数据泄露。
           如需更新内容或延长有效期，请在分享链接页面重新点击 生成分享链接 按钮。
+          当前数据库未做持久化存储，存在链接失效的可能性，后续再修复。
         </pre>
 
       </div>

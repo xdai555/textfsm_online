@@ -9,7 +9,7 @@ import datetime
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from gunicorn_conf import DB_PATH
+from config import DB_PATH
 
 
 # log_dir = "/var/log/gunicorn/"

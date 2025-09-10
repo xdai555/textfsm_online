@@ -2,6 +2,7 @@ import os
 import sqlite3
 import argparse
 from importlib.resources import path as importresources_path
+from config import DB_PATH
 
 
 def get_ntc_path(package="ntc_templates"):
@@ -42,10 +43,7 @@ def _read_context(file_path, template_filename):
 
 def create_database(data, template_path, source="ntc-templates"):
     """Create database from template data"""
-    db_filename = "textfsm_template.sqlite"
-    db_path = os.path.join("./", db_filename)
-
-    connection = sqlite3.connect(db_path)
+    connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
 
     # create templates table

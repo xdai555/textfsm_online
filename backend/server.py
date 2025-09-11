@@ -88,6 +88,8 @@ app = FastAPI()
 origins = [
     "http://localhost:8080",
     "http://127.0.0.1:8080",
+    "http://api1.xdai.vip",
+    "https://api1.xdai.vip",
     "http://textfsm.xdai.vip",
     "https://textfsm.xdai.vip",
     "https://textfsm-online.pages.dev",

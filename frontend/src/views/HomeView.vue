@@ -61,13 +61,14 @@
     
     <!-- 分享链接弹窗 -->
     <el-dialog
-      title="分享链接"
+      :title="shareDialogTitle"
       :visible.sync="showShareDialog"
       width="50%"
       :before-close="handleShareClose"
       :closeOnClickModal="false"
+      :closeOnPressEscape="false"
     >
-      <div class="share-content">
+      <div class="share-content" v-if="!showShareOption">
         <p>以下是您的分享链接，请复制并保存</p>
         <el-input v-model="shareLink" readonly style="width: 70%;">
           <template slot="append">
@@ -78,13 +79,24 @@
           创建时间 <el-tag size="small" type="success">{{ formatLocalTime(createdAt) }}</el-tag>，过期时间 <el-tag size="small" type="danger">{{ formatLocalTime(expiresAt) }}</el-tag>。
         </pre>
         <pre style="margin-top: 5px; font-size: 12px; font-style: italic; position: relative; top: 10px;">
-          当前分享链接仅用于临时存储，所有人都可更新内容，请勿将链接分享给非信任用户，否则可能导致数据泄露。
-          如需更新内容或延长有效期，请在分享链接页面重新点击 生成分享链接 按钮。
-          当前数据库未做持久化存储，存在链接失效的可能性，后续再修复。
+⚠️ 当前分享链接仅用于临时存储，可访问分享链接的所有人都可查看或更新内容，请勿将链接分享给非信任用户，否则可能导致数据泄露或损坏！
         </pre>
-
       </div>
-      <span slot="footer" class="dialog-footer">
+      
+      <!-- 分享选项界面 -->
+      <div class="share-option-content" v-else>
+        <p>您正在查看一个分享链接，可以选择以下操作：</p>
+        <div style="text-align: center; margin-top: 20px;">
+          <el-button type="primary" size="small" @click="updateCurrentShare">更新当前链接</el-button>
+          <el-button type="success" size="small" @click="createNewShare">创建新链接</el-button>
+        </div>
+        <pre style="margin-top: 5px; font-size: 14px; color: red; position: relative; top: 10px;">
+更新当前链接：覆盖原有内容并更新有效期（延长7天）
+创建新链接: 生成一个新的分享链接
+        </pre>
+      </div>
+      
+      <span slot="footer" class="dialog-footer" v-if="!showShareOption">
         <el-button type="primary" size="small" @click="handleShareClose">确定</el-button>
       </span>
     </el-dialog>
@@ -209,6 +221,8 @@ export default {
     return {
       showWelcomeDialog: false,  // 控制弹窗显示
       showShareDialog: false,    // 控制分享弹窗显示
+      showShareOption: false,    // 控制是否显示分享选项界面
+      shareDialogTitle: '分享链接', // 分享弹窗标题
       shareLink: '',             // 分享链接
       fontSize: 13,
       raw_text: '',
@@ -230,7 +244,14 @@ export default {
       horizontal: false,
       shareId: null,  // 当前页面的分享ID（如果从分享链接打开）
       expiresAt: null, // 分享链接过期时间
-      createdAt: null  // 分享链接创建时间
+      createdAt: null,  // 分享链接创建时间
+      shareData: {
+        raw_text: '',
+        template_text: '',
+        source_value: '',
+        platform_value: '',
+        template_value: ''
+      }  // 临时存储分享数据
     }
   },
   created () { 
@@ -288,7 +309,8 @@ export default {
     
     // 生成分享链接
     generateShareLink() {
-      const shareData = {
+      // 准备分享数据
+      this.shareData = {
         raw_text: this.raw_text,
         template_text: this.template_text,
         source_value: this.source_value,
@@ -296,49 +318,69 @@ export default {
         template_value: this.template_value
       };
       
-      // 如果当前页面是通过分享链接访问的，则更新分享链接；否则创建新的分享链接
+      // 如果当前页面是通过分享链接访问的，显示选择界面；否则直接创建新链接
       if (this.shareId) {
-        // 更新分享链接
-        axios.post(`${config.API_BASE_URL}/api/updateShare/${this.shareId}`, shareData)
-          .then(response => {
-            if (response.data && response.data.share_id) {
-              this.shareLink = `${window.location.origin}${window.location.pathname}?shareId=${this.shareId}`;
-              // 直接使用后端返回的格式化过期时间
-              this.expiresAt = response.data.expires_at;
-              // 处理创建时间
-              this.createdAt = response.data.created_at;
-              this.showShareDialog = true;
-            } else {
-              console.error('更新分享链接失败:', response.data);
-              this.$message.error('更新分享链接失败，请重试！');
-            }
-          })
-          .catch(error => {
-            this.$message.error('更新分享链接失败，请重试！');
-            console.error('更新分享链接失败:', error);
-          });
+        this.shareDialogTitle = '分享选项';
+        this.showShareOption = true;
+        this.showShareDialog = true;
       } else {
-        // 创建新的分享链接
-        axios.post(`${config.API_BASE_URL}/api/createShare`, shareData)
-          .then(response => {
-            if (response.data && response.data.share_id) {
-              const shareId = response.data.share_id;
-              this.shareLink = `${window.location.origin}${window.location.pathname}?shareId=${shareId}`;
-              // 直接使用后端返回的格式化过期时间
-              this.expiresAt = response.data.expires_at;
-              // 处理创建时间
-              this.createdAt = response.data.created_at;
-              this.showShareDialog = true;
-            } else {
-              console.error('生成分享链接失败:', response.data);
-              this.$message.error('生成分享链接失败，请重试！');
-            }
-          })
-          .catch(error => {
-            this.$message.error('生成分享链接失败，请重试！');
-            console.error('生成分享链接失败:', error);
-          });
+        this.createNewShare();
       }
+    },
+    
+    // 更新当前分享链接
+    updateCurrentShare() {
+      this.showShareOption = false;
+      this.shareDialogTitle = '分享链接';
+      
+      axios.post(`${config.API_BASE_URL}/api/updateShare/${this.shareId}`, this.shareData)
+        .then(response => {
+          if (response.data && response.data.share_id) {
+            this.shareLink = `${window.location.origin}${window.location.pathname}?shareId=${this.shareId}`;
+            // 直接使用后端返回的格式化过期时间
+            this.expiresAt = response.data.expires_at;
+            // 处理创建时间
+            this.createdAt = response.data.created_at;
+          } else {
+            console.error('更新分享链接失败:', response.data);
+            this.$message.error('更新分享链接失败，请重试！');
+            this.showShareDialog = false;
+          }
+        })
+        .catch(error => {
+          this.$message.error('更新分享链接失败，请重试！');
+          console.error('更新分享链接失败:', error);
+          this.showShareDialog = false;
+        });
+    },
+    
+    // 创建新的分享链接
+    createNewShare() {
+      this.showShareOption = false;
+      this.shareDialogTitle = '分享链接';
+      
+      axios.post(`${config.API_BASE_URL}/api/createShare`, this.shareData)
+        .then(response => {
+          if (response.data && response.data.share_id) {
+            const shareId = response.data.share_id;
+            this.shareLink = `${window.location.origin}${window.location.pathname}?shareId=${shareId}`;
+            // 直接使用后端返回的格式化过期时间
+            this.expiresAt = response.data.expires_at;
+            // 处理创建时间
+            this.createdAt = response.data.created_at;
+          } else {
+            console.error('生成分享链接失败:', response.data);
+            this.$message.error('生成分享链接失败，请重试！');
+            this.showShareDialog = false;
+            return;
+          }
+        })
+        .catch(error => {
+          this.$message.error('生成分享链接失败，请重试！');
+          console.error('生成分享链接失败:', error);
+          this.showShareDialog = false;
+          return;
+        });
     },
     
     // 复制分享链接到剪贴板
@@ -355,6 +397,8 @@ export default {
     // 关闭分享弹窗
     handleShareClose() {
       this.showShareDialog = false;
+      this.showShareOption = false; // 重置分享选项状态
+      this.shareDialogTitle = '分享链接'; // 重置标题
       // 不要清空shareLink，让用户还能看到链接
     },
 

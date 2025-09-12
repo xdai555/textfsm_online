@@ -368,6 +368,7 @@ export default {
             this.expiresAt = response.data.expires_at;
             // 处理创建时间
             this.createdAt = response.data.created_at;
+            this.showShareDialog = true;
           } else {
             console.error('生成分享链接失败:', response.data);
             this.$message.error('生成分享链接失败，请重试！');

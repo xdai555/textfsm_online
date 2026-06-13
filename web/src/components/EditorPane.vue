@@ -1,8 +1,9 @@
 <template>
   <div class="editor-pane" :class="{ 'editor-pane--error': props.error }">
     <div class="action-btn-wrap">
-      <DownloadButton :content="currentContent()" :ext="props.ext" />
       <CopyButton :content="currentContent()" />
+      <DownloadButton :content="currentContent()" :ext="props.ext" />
+      <ClearButton v-if="!props.readOnly" @clear="emit('clear')" />
     </div>
     <div v-show="scrolled" class="scroll-top-btn-wrap">
       <ScrollTopButton :editor-view="editorView" :visible="scrolled" />
@@ -21,6 +22,7 @@ import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { textfsm } from '../lang/textfsm.js'
 import CopyButton from './CopyButton.vue'
 import DownloadButton from './DownloadButton.vue'
+import ClearButton from './ClearButton.vue'
 import ScrollTopButton from './ScrollTopButton.vue'
 
 const props = defineProps({
@@ -36,7 +38,7 @@ const props = defineProps({
   error: { type: Boolean, default: false }
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'clear'])
 
 const editorContainer = ref(null)
 const scrolled = ref(false)
@@ -195,7 +197,9 @@ watch(() => props.lineWrapping, () => {
   right: 6px;
   z-index: 10;
   display: flex;
-  gap: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
   opacity: 0;
   transition: opacity 0.2s;
 }

@@ -58,14 +58,11 @@
         </button>
       </el-tooltip>
       <el-tooltip :content="editorStore.lineWrapping ? '关闭自动换行' : '开启自动换行'" placement="bottom">
-        <el-switch
-          ref="wrapBtn"
-          v-model="editorStore.lineWrapping"
-          class="wrap-switch"
-          inline-prompt
-          :active-icon="Check"
-          :inactive-icon="Close"
-        />
+        <button ref="wrapBtn" class="icon-btn" @click="editorStore.lineWrapping = !editorStore.lineWrapping">
+          <transition name="icon-swap" mode="out-in">
+            <IconWordWrap :key="editorStore.lineWrapping" :wrap="editorStore.lineWrapping" />
+          </transition>
+        </button>
       </el-tooltip>
       <div ref="fontSizeArea" class="font-size-ctrl">
         <button class="icon-btn"
@@ -121,11 +118,12 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { InfoFilled, Rank, ZoomOut, ZoomIn, Sunny, Moon, Monitor, Share, Reading, Check, Close } from '@element-plus/icons-vue'
+import { InfoFilled, Rank, ZoomOut, ZoomIn, Sunny, Moon, Monitor, Share, Reading } from '@element-plus/icons-vue'
 import { useTemplateStore } from '../stores/template'
 import { useEditorStore } from '../stores/editor'
 import { useShareStore } from '../stores/share'
 import { enableBookPromo } from '../utils/feature'
+import IconWordWrap from './icons/IconWordWrap.vue'
 
 const templateStore = useTemplateStore()
 const editorStore = useEditorStore()
@@ -244,14 +242,6 @@ function commitFontSize() {
   background: var(--el-fill-color-light);
   color: var(--el-color-primary);
 }
-.wrap-switch {
-  --el-switch-on-color: var(--el-text-color-regular);
-  --el-switch-off-color: var(--el-fill-color);
-  --el-switch-core-border-color: var(--el-border-color);
-}
-.wrap-switch:hover {
-  --el-switch-on-color: var(--el-color-primary);
-}
 .icon-btn img,
 .icon-btn svg {
   width: 18px;
@@ -292,14 +282,18 @@ function commitFontSize() {
   color: var(--el-text-color-regular);
 }
 .theme-icon-enter-active,
-.theme-icon-leave-active {
+.theme-icon-leave-active,
+.icon-swap-enter-active,
+.icon-swap-leave-active {
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
-.theme-icon-enter-from {
+.theme-icon-enter-from,
+.icon-swap-enter-from {
   transform: rotate(-90deg) scale(0.6);
   opacity: 0;
 }
-.theme-icon-leave-to {
+.theme-icon-leave-to,
+.icon-swap-leave-to {
   transform: rotate(90deg) scale(0.6);
   opacity: 0;
 }

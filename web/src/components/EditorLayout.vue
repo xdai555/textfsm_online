@@ -9,6 +9,7 @@
           :font-size="editorStore.fontSize"
           :line-wrapping="editorStore.lineWrapping"
           ext="txt"
+          @clear="templateStore.rawText = ''"
         />
       </el-card>
     </Pane>
@@ -22,6 +23,7 @@
           :line-wrapping="editorStore.lineWrapping"
           :lang-textfsm="true"
           ext="textfsm"
+          @clear="templateStore.templateText = ''"
         />
       </el-card>
     </Pane>

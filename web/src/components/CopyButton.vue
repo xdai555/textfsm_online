@@ -23,7 +23,7 @@ async function handleCopy() {
     document.execCommand('copy')
     ta.remove()
   }
-  ElMessage({ message: '复制成功', type: 'primary' })
+  ElMessage({ message: '已复制', type: 'success', plain: true })
 }
 </script>
 

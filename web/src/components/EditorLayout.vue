@@ -8,7 +8,7 @@
           :is-dark="editorStore.isDark"
           :font-size="editorStore.fontSize"
           :line-wrapping="editorStore.lineWrapping"
-          ext="txt"
+          filename="rawcontent.txt"
           @clear="templateStore.rawText = ''"
         />
       </el-card>
@@ -22,7 +22,7 @@
           :font-size="editorStore.fontSize"
           :line-wrapping="editorStore.lineWrapping"
           :lang-textfsm="true"
-          ext="textfsm"
+          filename="template.textfsm"
           @clear="templateStore.templateText = ''"
         />
       </el-card>
@@ -37,7 +37,7 @@
           :font-size="editorStore.fontSize"
           :line-wrapping="editorStore.lineWrapping"
           :lang-json="!templateStore.parseError"
-          ext="json"
+          filename="result.json"
           :error="templateStore.parseError"
         />
       </el-card>

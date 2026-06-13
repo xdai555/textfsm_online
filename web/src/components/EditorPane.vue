@@ -2,7 +2,7 @@
   <div class="editor-pane" :class="{ 'editor-pane--error': props.error }">
     <div class="action-btn-wrap">
       <CopyButton :content="currentContent()" />
-      <DownloadButton :content="currentContent()" :ext="props.ext" />
+      <DownloadButton :content="currentContent()" :filename="props.filename" />
       <ClearButton v-if="!props.readOnly" @clear="emit('clear')" />
     </div>
     <div v-show="scrolled" class="scroll-top-btn-wrap">
@@ -34,7 +34,7 @@ const props = defineProps({
   lineWrapping: { type: Boolean, default: true },
   langJson: { type: Boolean, default: false },
   langTextfsm: { type: Boolean, default: false },
-  ext: { type: String, default: 'txt' },
+  filename: { type: String, default: 'download' },
   error: { type: Boolean, default: false }
 })
 

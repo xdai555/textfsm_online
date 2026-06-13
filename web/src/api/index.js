@@ -1,7 +1,8 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api'
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+  timeout: 5000
 })
 
 const controllers = {}
@@ -21,17 +22,13 @@ async function abortableRequest(key, config) {
   }
 }
 
-export function request(config) {
-  return abortableRequest('default', config)
-}
-
 export function fetchList(apiPath, params, dataKey) {
-  return request({ url: apiPath, method: 'get', params })
-    .then(res => res.data[dataKey])
+  return abortableRequest('list', { url: apiPath, method: 'get', params })
+    .then(res => res?.data[dataKey])
 }
 
 export function parseTextFSM(rawText, templateText) {
-  return request({
+  return abortableRequest('parse', {
     url: '/parser',
     method: 'post',
     data: { raw_text: rawText, template_text: templateText }
@@ -46,20 +43,20 @@ function toSharePayload(data) {
   }
 }
 
+export function getShare(shareId) {
+  return abortableRequest('share', { url: `/getShare/${shareId}`, method: 'get' })
+}
+
 export function createShare(data) {
-  return request({
+  return abortableRequest('share_action', {
     url: '/createShare', method: 'post',
     data: toSharePayload(data)
   })
 }
 
 export function updateShare(shareId, data) {
-  return request({
+  return abortableRequest('share_action', {
     url: `/updateShare/${shareId}`, method: 'post',
     data: toSharePayload(data)
   })
-}
-
-export function getShare(shareId) {
-  return abortableRequest('share', { url: `/getShare/${shareId}`, method: 'get' })
 }

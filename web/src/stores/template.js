@@ -79,7 +79,8 @@ export const useTemplateStore = defineStore('template', () => {
     parseError.value = false
     try {
       const data = await parseTextFSM(rawText.value, templateText.value)
-      if (data && data.msg) {
+      if (!data) return
+      if (data.msg) {
         parseError.value = true
         result.value = data.msg
       } else {
@@ -94,7 +95,7 @@ export const useTemplateStore = defineStore('template', () => {
     }
   }
 
-  const debouncedParse = useDebounceFn(fetchParseTextFSM, 300)
+  const debouncedParse = useDebounceFn(fetchParseTextFSM, 500)
   watch([rawText, templateText], debouncedParse)
 
   return {

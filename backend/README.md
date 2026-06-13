@@ -27,7 +27,7 @@ pip install -r requirements.txt
 ```
 
 ### 初始化数据库
-运行 `python3 init_db.py` 初始化数据库，运行完成后会在本地目录生成 textfsm_template.sqlite，服务端时会读取该文件。
+运行 `python3 init_db.py` 初始化数据库，运行完成后会在 `db` 目录生成 textfsm_template.sqlite，服务端会读取该文件。
 
 初始化脚本不加任何参数运行时，默认写入 pip 安装好的 ntc-templates 模板。
 
@@ -39,11 +39,11 @@ Generate database from 'TextFSM Online'.
 
 optional arguments:
   -h, --help       show this help message and exit
-  --source SOURCE  The source of the templates (e.g., 'ntc-templates').
-  --path PATH      The path where the `index` file is located.
+  --source SOURCE  The source name for the templates (e.g., 'ntc-templates', 'my-templates', etc.)
+  --path PATH      The path where the 'index' file is located
 ```
 
-如果需要把其他分支的 ntc-templates 模板写入数据库，需要确保该分支的模板内容及格式符合 ntc-templates 的开发标准；运行初始化脚本时添加指 `source` 和 `path` 参数。
+如果需要把其他分支的 ntc-templates 模板写入数据库，需要确保该分支的模板内容及格式符合 ntc-templates 的开发标准；运行初始化脚本时添加 `source` 和 `path` 参数。
 
 > 请务必要指定 `source` 参数，否则当模板名称相同时，会覆盖更新已有的模板内容。
 
@@ -63,7 +63,7 @@ python3 init_db.py --source Elinpf --path Elinpf/ntc_templates/templates
 ./start_server.sh
 ```
 
-如果服务未能成功启动，请检查 `/var/log/gunicorn/gunicorn_error.log`。
+如果服务未能成功启动，请检查日志目录下的 gunicorn_error.log。
 
 ### 停止服务
 

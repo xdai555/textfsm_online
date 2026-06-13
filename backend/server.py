@@ -4,10 +4,12 @@ import tempfile
 # import os
 import textfsm
 import sqlite3
+import shortuuid as uuid
+import datetime
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from gunicorn_conf import DB_PATH
+from config import DB_PATH
 
 
 # log_dir = "/var/log/gunicorn/"
@@ -72,12 +74,22 @@ def execute_query(query, parameters=None):
     return result
 
 
+def calculate_expiration_date(days=7):
+    """计算指定天数后的过期日期"""
+    now = datetime.datetime.now(datetime.timezone.utc)
+    expires_at = now + datetime.timedelta(days=days)
+    return expires_at.strftime("%Y-%m-%d %H:%M:%S")
+
+
 app = FastAPI()
 
 
 # 可以发起请求的源
 origins = [
     "http://localhost:8080",
+    "http://127.0.0.1:8080",
+    "http://api1.xdai.vip",
+    "https://api1.xdai.vip",
     "http://textfsm.xdai.vip",
     "https://textfsm.xdai.vip",
     "https://textfsm-online.pages.dev",
@@ -99,6 +111,14 @@ class TextFSMBody(BaseModel):
     template_text: str
 
 
+class ShareBody(BaseModel):
+    raw_text: str
+    template_text: str
+    source_value: str = None
+    platform_value: str = None
+    template_value: str = None
+
+
 @router.post("/parser")
 async def parse_textfsm(textfsm_body: TextFSMBody):
     textfsm_body = dict(textfsm_body)
@@ -107,6 +127,113 @@ async def parse_textfsm(textfsm_body: TextFSMBody):
         textfsm_body["result"] = result
         # logging.info(textfsm_body)
     return result
+
+
+@router.post("/createShare")
+async def create_share(share_body: ShareBody):
+    """创建分享链接"""
+    share_id = str(uuid.uuid())
+    # 计算过期时间
+    expires_at = calculate_expiration_date()
+    connection, cursor = connect_to_database()
+    cursor.execute("""
+        INSERT INTO shares 
+        (id, raw_text, template_text, source_value, platform_value, template_value, expires_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (
+        share_id,
+        share_body.raw_text,
+        share_body.template_text,
+        share_body.source_value,
+        share_body.platform_value,
+        share_body.template_value,
+        expires_at
+    ))
+    connection.commit()
+    connection.close()
+    
+    # 返回分享链接、过期时间和创建时间，创建时间由数据库自动生成，需要重新查询获取
+    connection, cursor = connect_to_database()
+    cursor.execute("SELECT created_at FROM shares WHERE id = ?", (share_id,))
+    result = cursor.fetchone()
+    connection.close()
+    
+    created_at = result[0] if result else None
+    
+    return {"share_id": share_id, "expires_at": expires_at, "created_at": created_at}
+
+
+@router.post("/updateShare/{share_id}")
+async def update_share(share_id: str, share_body: ShareBody):
+    """更新分享链接"""
+    connection, cursor = connect_to_database()
+    
+    # 检查分享链接是否存在
+    cursor.execute("SELECT id FROM shares WHERE id = ?", (share_id,))
+    existing_share = cursor.fetchone()
+    
+    if not existing_share:
+        connection.close()
+        return {"error": "Share not found"}
+    
+    expires_at = calculate_expiration_date()
+    # 更新数据
+    cursor.execute("""
+        UPDATE shares SET 
+        raw_text = ?, 
+        template_text = ?, 
+        source_value = ?, 
+        platform_value = ?, 
+        template_value = ?,
+        expires_at = ?
+        WHERE id = ?
+    """, (
+        share_body.raw_text,
+        share_body.template_text,
+        share_body.source_value,
+        share_body.platform_value,
+        share_body.template_value,
+        expires_at,
+        share_id
+    ))
+    
+    connection.commit()
+    connection.close()
+    
+    # 查询创建时间
+    connection, cursor = connect_to_database()
+    cursor.execute("SELECT created_at FROM shares WHERE id = ?", (share_id,))
+    result = cursor.fetchone()
+    connection.close()
+    created_at = result[0] if result else None
+    return {"share_id": share_id, "updated": True, "expires_at": expires_at, "created_at": created_at}
+
+
+@router.get("/getShare/{share_id}")
+async def get_share(share_id: str):
+    """获取分享数据"""
+    connection, cursor = connect_to_database()
+    cursor.execute("""
+        SELECT raw_text, template_text, source_value, platform_value, template_value, expires_at, created_at
+        FROM shares
+        WHERE id = ? AND (expires_at IS NULL OR expires_at > datetime('now'))
+    """, (share_id,))
+    
+    result = cursor.fetchone()
+    connection.close()
+    
+    if result:
+        return {
+            "raw_text": result[0],
+            "template_text": result[1],
+            "source_value": result[2],
+            "platform_value": result[3],
+            "template_value": result[4],
+            "expires_at": result[5],
+            "created_at": result[6]
+        }
+    else:
+        return {"error": "Share not found or expired"}
 
 
 @router.get("/getSourceList")
@@ -155,6 +282,5 @@ app.include_router(router, prefix="/api")
 
 if __name__ == "__main__":
     import uvicorn
-
     # uvicorn.run(app, host="127.0.0.1", port=8000)
     uvicorn.run(app, host="0.0.0.0", port=9999)

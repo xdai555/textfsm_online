@@ -1,5 +1,7 @@
 ntc-templates
+#immutables==0.19
 importlib-metadata==4.8.3
 fastapi==0.83.0
 gunicorn==21.2.0
 uvicorn==0.16.0
+shortuuid==1.0.13

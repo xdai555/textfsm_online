@@ -1,13 +1,13 @@
 import os
-import argparse
 import sqlite3
+import argparse
 from importlib.resources import path as importresources_path
+from config import DB_PATH
 
 
 def get_ntc_path(package="ntc_templates"):
-    """获取通过 pip 安装的 ntc-templates 包路径"""
+    """get default ntc-templates package path"""
     with importresources_path(package=package, resource="templates") as posix_path:
-        # Example: /opt/venv/netmiko/lib/python3.8/site-packages/ntc_templates/templates
         template_dir = str(posix_path)
 
     index = os.path.join(template_dir, "index")
@@ -17,7 +17,7 @@ def get_ntc_path(package="ntc_templates"):
 
 
 def parse_index_file(file_path):
-    """解析索引文件并提取每一行的 "Template, Platform" 数据"""
+    """Parse index file and extract "Template, Platform" data"""
     data = []
     with open(file_path, "r") as file:
         lines = file.readlines()
@@ -33,7 +33,7 @@ def parse_index_file(file_path):
 
 
 def _read_context(file_path, template_filename):
-    """根据给定的文件路径读取模版文本内容"""
+    """Read template context from file"""
     template_file = os.path.join(file_path, f"{template_filename}")
     with open(template_file, "r") as file:
         context = file.read()
@@ -41,14 +41,11 @@ def _read_context(file_path, template_filename):
 
 
 def create_database(data, template_path, source="ntc-templates"):
-    """从给定模版路径中读取模版文本内容并写入本地数据库"""
-    db_filename = "textfsm_template.sqlite"
-    db_path = os.path.join("./", db_filename)
-
-    connection = sqlite3.connect(db_path)
+    """Create database from template data"""
+    connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
 
-    # 初始化数据库
+    # create templates table
     cursor.execute(
         """CREATE TABLE IF NOT EXISTS templates (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -56,14 +53,28 @@ def create_database(data, template_path, source="ntc-templates"):
                     Platform TEXT NOT NULL,
                     Context TEXT NOT NULL,
                     Source TEXT DEFAULT '%s',
-                    Created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    Modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    Created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    Modified_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                     UNIQUE (Source, Template)
                 )"""
         % source
     )
 
-    # 写入数据
+    # create shares table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS shares (
+            id TEXT PRIMARY KEY,
+            raw_text TEXT NOT NULL,
+            template_text TEXT NOT NULL,
+            source_value TEXT,
+            platform_value TEXT,
+            template_value TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            expires_at DATETIME
+        )
+    """)
+
+    # write data to database
     for template, platform in data:
         context = _read_context(template_path, template)
         cursor.execute(
@@ -80,19 +91,17 @@ if __name__ == "__main__":
         "--source",
         type=str,
         default="ntc-templates",
-        help="The source of the templates  (e.g., 'ntc-templates')."
+        help="The source name for the templates (e.g., 'ntc-templates', 'my-templates', etc.)"
     )
     parser.add_argument(
         "--path",
         type=str,
-        # 默认使用 pip 安装的 ntc-templates 的包路径生成数据
         default=get_ntc_path(),
-        help="The path where the `index` file is located."
+        help="The path where the 'index' file is located"
     )
     args = parser.parse_args()
     source = args.source
     index_path = args.path
-    # ntc-templates 索引文件名称
     index_filename = "index"
     file_path = os.path.join(index_path, index_filename)
     data = parse_index_file(file_path)

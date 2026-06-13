@@ -5,7 +5,7 @@
       <CopyButton :content="currentContent()" />
     </div>
     <div v-show="scrolled" class="scroll-top-btn-wrap">
-      <ScrollTopButton :editor-view="editorView" />
+      <ScrollTopButton :editor-view="editorView" :visible="scrolled" />
     </div>
     <div ref="editorContainer" class="editor-wrap"></div>
   </div>

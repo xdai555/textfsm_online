@@ -5,11 +5,15 @@
       <span class="footer-sep">|</span>
       <a href="https://github.com/xdai555/" target="_blank">Copyright © <el-icon :size="14"><IconGithub /></el-icon></a>
       <span class="footer-sep">|</span>
-      <a href="https://mp.weixin.qq.com/s/ZA_CXNL2O4zSGEpr26KV5A" target="_blank">@NetDevOps加油站：深入浅出TextFSM 终极版教程</a>
+      <el-tooltip :content="t('footer.textfsmTutorialTooltip')" placement="top" :show-after="300">
+        <a href="https://mp.weixin.qq.com/s/ZA_CXNL2O4zSGEpr26KV5A" target="_blank">{{ t('footer.textfsmTutorial') }}</a>
+      </el-tooltip>
       <span class="footer-sep">|</span>
-      <a href="https://netaxe.github.io/" target="_blank">@iflytek/NetAxe：国产网络自动化领域解决方案框架</a>
+      <el-tooltip :content="t('footer.netaxeTooltip')" placement="top" :show-after="300">
+        <a href="https://netaxe.github.io/" target="_blank">{{ t('footer.netaxe') }}</a>
+      </el-tooltip>
       <span class="footer-sep">|</span>
-      <a href="https://support.qq.com/products/447487/" target="_blank">意见反馈</a>
+      <a href="https://support.qq.com/products/447487/" target="_blank">{{ t('footer.feedback') }}</a>
       <span class="footer-sep">|</span>
       <a class="lang-switch" @click="toggleLocale">{{ locale === 'en' ? '中文' : 'English' }}</a>
     </span>
@@ -20,7 +24,7 @@
 import { useI18n } from 'vue-i18n'
 import { setLocale } from '../i18n'
 
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 
 function toggleLocale() {
   setLocale(locale.value === 'en' ? 'zh-CN' : 'en')

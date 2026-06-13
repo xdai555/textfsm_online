@@ -1,7 +1,5 @@
 <template>
-  <el-tooltip content="清空" placement="left">
-    <el-button class="clear-btn" :icon="Delete" size="small" text bg circle @click="handleClear" />
-  </el-tooltip>
+  <el-button class="clear-btn" :icon="Delete" size="small" text bg circle @click="handleClear" />
 </template>
 
 <script setup>
@@ -16,7 +14,6 @@ function handleClear() {
 
 <style scoped>
 .clear-btn {
-  opacity: 0.6;
   transition: opacity 0.2s;
 }
 </style>

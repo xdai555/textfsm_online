@@ -1,0 +1,18 @@
+# TextFSM Online
+
+> https://textfsm.xdai.vip/
+
+Online TextFSM template parser. Paste CLI output from network devices (Cisco, Huawei, H3C, etc.), select a TextFSM template, and get structured JSON instantly.
+
+## Features
+
+- Real-time parsing — input raw CLI text and template, results update automatically
+- Built-in template library — ntc-templates + Elinpf/ntc-templates (Chinese vendor templates)
+- CodeMirror 6 editor with syntax highlighting for TextFSM templates and JSON output
+- Dark mode, font size control, line wrap toggle
+- Copy, download, clear per editor pane
+- Share parsed results via link
+
+## Use Case
+
+Network engineers and NetDevOps practitioners use TextFSM to convert semi-structured CLI output (show commands, routing tables, interface status) into structured data for automation pipelines.

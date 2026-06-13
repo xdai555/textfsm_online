@@ -21,6 +21,8 @@ services:
     container_name: textfsm_online_backend
     ports:
       - "9999:9999"
+    volumes:
+      - textfsm_db:/app/db
     networks:
       - textfsm_online_network
     restart: always
@@ -28,3 +30,6 @@ services:
 networks:
   textfsm_online_network:
     driver: bridge
+
+volumes:
+  textfsm_db:

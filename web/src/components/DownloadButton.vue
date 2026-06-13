@@ -1,5 +1,5 @@
 <template>
-  <el-button class="download-btn" :icon="Download" size="small" text @click="handleDownload" />
+  <el-button class="download-btn" :icon="Download" size="small" text bg circle @click="handleDownload" />
 </template>
 
 <script setup>

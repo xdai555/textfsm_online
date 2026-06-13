@@ -7,6 +7,12 @@
       placement="bottom"
     />
     <el-tour-step
+      :target="wrapBtn"
+      title="自动换行"
+      description="切换编辑器是否自动换行，关闭后可横向滚动查看长行"
+      placement="bottom"
+    />
+    <el-tour-step
       :target="fontSizeArea"
       title="字号调整"
       description="点击数字直接修改字号，或使用加减按钮微调"
@@ -26,6 +32,7 @@ import { ref, onMounted } from 'vue'
 
 const props = defineProps({
   layoutBtn: { type: Object, default: null },
+  wrapBtn: { type: Object, default: null },
   fontSizeArea: { type: Object, default: null },
   shareBtn: { type: Object, default: null }
 })

@@ -13,6 +13,7 @@
     <BookPromoDialog v-if="enableBookPromo" ref="bookPromoRef" />
     <HeaderTour
       :layout-btn="appHeaderRef?.layoutBtn"
+      :wrap-btn="appHeaderRef?.wrapBtn"
       :font-size-area="appHeaderRef?.fontSizeArea"
       :share-btn="appHeaderRef?.shareBtn"
     />

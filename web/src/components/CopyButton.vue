@@ -1,5 +1,5 @@
 <template>
-  <el-button class="copy-btn" :icon="CopyDocument" size="small" text @click="handleCopy" />
+  <el-button class="copy-btn" :icon="CopyDocument" size="small" text bg circle @click="handleCopy" />
 </template>
 
 <script setup>

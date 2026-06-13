@@ -7,6 +7,7 @@
           placeholder="请输入原始 CLI 内容"
           :is-dark="editorStore.isDark"
           :font-size="editorStore.fontSize"
+          :line-wrapping="editorStore.lineWrapping"
           ext="txt"
         />
       </el-card>
@@ -18,6 +19,7 @@
           placeholder="请输入 TextFSM 模板内容"
           :is-dark="editorStore.isDark"
           :font-size="editorStore.fontSize"
+          :line-wrapping="editorStore.lineWrapping"
           :lang-textfsm="true"
           ext="textfsm"
         />
@@ -31,6 +33,7 @@
           :read-only="true"
           :is-dark="editorStore.isDark"
           :font-size="editorStore.fontSize"
+          :line-wrapping="editorStore.lineWrapping"
           :lang-json="!templateStore.parseError"
           ext="json"
           :error="templateStore.parseError"

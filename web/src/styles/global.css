@@ -43,6 +43,26 @@ html.dark body {
   margin-right: 10px !important;
   background-color: transparent !important;
 }
+/* 细滚动条 */
+.cm-scroller::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.cm-scroller::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.3);
+  border-radius: 3px;
+}
+.cm-scroller::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.5);
+}
+.cm-scroller::-webkit-scrollbar-track {
+  background: transparent;
+}
+.cm-scroller {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(128, 128, 128, 0.3) transparent;
+}
+
 .splitpanes.default-theme .splitpanes__splitter:before,
 .splitpanes.default-theme .splitpanes__splitter:after {
   content: none !important;

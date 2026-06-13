@@ -3,7 +3,7 @@
     <div class="header-brand">TextFSM Online</div>
 
     <div class="header-center">
-      <el-tooltip placement="bottom" effect="light" :popper-class="'small-popper'">
+      <el-tooltip placement="bottom" effect="light">
         <template #content>
           ntc-templates: 由 <a href="https://github.com/networktocode/ntc-templates" target="_blank">@networktocode</a>主导的网络设备TextFSM开源模板库<br/>
           Elinpf: ntc-templates 的分支仓库，由 <a href="https://github.com/Elinpf/ntc-templates" target="_blank">@Elinpf</a>更新的国内主流厂商TextFSM模板<br/>
@@ -52,9 +52,21 @@
     </div>
 
     <div class="header-right">
-      <button ref="layoutBtn" class="icon-btn" @click="editorStore.horizontal = !editorStore.horizontal">
-        <el-icon><Rank /></el-icon>
-      </button>
+      <el-tooltip :content="editorStore.horizontal ? '切换为垂直布局' : '切换为水平布局'" placement="bottom">
+        <button ref="layoutBtn" class="icon-btn" @click="editorStore.horizontal = !editorStore.horizontal">
+          <el-icon><Rank /></el-icon>
+        </button>
+      </el-tooltip>
+      <el-tooltip :content="editorStore.lineWrapping ? '关闭自动换行' : '开启自动换行'" placement="bottom">
+        <el-switch
+          ref="wrapBtn"
+          v-model="editorStore.lineWrapping"
+          class="wrap-switch"
+          inline-prompt
+          :active-icon="Check"
+          :inactive-icon="Close"
+        />
+      </el-tooltip>
       <div ref="fontSizeArea" class="font-size-ctrl">
         <button class="icon-btn"
           @click="editorStore.fontSize = Math.max(10, editorStore.fontSize - 1)">
@@ -94,13 +106,22 @@
           <el-icon><Reading /></el-icon>
         </button>
       </el-tooltip>
+      <el-tooltip placement="bottom" effect="light">
+        <template #content>
+          - 本站点支持本地部署，点击查看：<a href="https://github.com/xdai555/textfsm_online" target="_blank">GitHub</a>、<a href="https://gitee.com/xdai555/textfsm_online" target="_blank">Gitee</a><br/>
+          - 编辑窗口间的分割条支持拖动和双击
+        </template>
+        <a href="https://github.com/xdai555/textfsm_online" target="_blank" class="icon-btn">
+          <el-icon><IconGithub /></el-icon>
+        </a>
+      </el-tooltip>
     </div>
   </el-card>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { InfoFilled, Rank, ZoomOut, ZoomIn, Sunny, Moon, Monitor, Share, Reading } from '@element-plus/icons-vue'
+import { InfoFilled, Rank, ZoomOut, ZoomIn, Sunny, Moon, Monitor, Share, Reading, Check, Close } from '@element-plus/icons-vue'
 import { useTemplateStore } from '../stores/template'
 import { useEditorStore } from '../stores/editor'
 import { useShareStore } from '../stores/share'
@@ -111,10 +132,11 @@ const editorStore = useEditorStore()
 const shareStore = useShareStore()
 
 const layoutBtn = ref(null)
+const wrapBtn = ref(null)
 const fontSizeArea = ref(null)
 const shareBtn = ref(null)
 
-defineExpose({ layoutBtn, fontSizeArea, shareBtn })
+defineExpose({ layoutBtn, wrapBtn, fontSizeArea, shareBtn })
 
 const emit = defineEmits(['openBookPromo'])
 
@@ -221,6 +243,14 @@ function commitFontSize() {
 .icon-btn:hover {
   background: var(--el-fill-color-light);
   color: var(--el-color-primary);
+}
+.wrap-switch {
+  --el-switch-on-color: var(--el-text-color-regular);
+  --el-switch-off-color: var(--el-fill-color);
+  --el-switch-core-border-color: var(--el-border-color);
+}
+.wrap-switch:hover {
+  --el-switch-on-color: var(--el-color-primary);
 }
 .icon-btn img,
 .icon-btn svg {

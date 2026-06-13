@@ -16,6 +16,7 @@ export const useEditorStore = defineStore('editor', () => {
   }, { immediate: true })
 
   const fontSize = useLocalStorage('textfsm-font-size', 13, { serializer: { read: Number, write: String } })
+  const lineWrapping = useLocalStorage('textfsm-line-wrapping', true)
 
   const isNarrow = useMediaQuery('(max-width: 768px)')
   const horizontal = ref(false)
@@ -31,5 +32,5 @@ export const useEditorStore = defineStore('editor', () => {
     mode.value = THEME_CYCLE[(idx + 1) % THEME_CYCLE.length]
   }
 
-  return { isDark, mode, fontSize, horizontal, toggleTheme }
+  return { isDark, mode, fontSize, lineWrapping, horizontal, toggleTheme }
 })

@@ -4,6 +4,9 @@
       <DownloadButton :content="currentContent()" :ext="props.ext" />
       <CopyButton :content="currentContent()" />
     </div>
+    <div v-show="scrolled" class="scroll-top-btn-wrap">
+      <ScrollTopButton :editor-view="editorView" />
+    </div>
     <div ref="editorContainer" class="editor-wrap"></div>
   </div>
 </template>
@@ -18,6 +21,7 @@ import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { textfsm } from '../lang/textfsm.js'
 import CopyButton from './CopyButton.vue'
 import DownloadButton from './DownloadButton.vue'
+import ScrollTopButton from './ScrollTopButton.vue'
 
 const props = defineProps({
   modelValue: { type: String, default: '' },
@@ -25,6 +29,7 @@ const props = defineProps({
   readOnly: { type: Boolean, default: false },
   isDark: { type: Boolean, default: false },
   fontSize: { type: Number, default: 13 },
+  lineWrapping: { type: Boolean, default: true },
   langJson: { type: Boolean, default: false },
   langTextfsm: { type: Boolean, default: false },
   ext: { type: String, default: 'txt' },
@@ -34,6 +39,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 
 const editorContainer = ref(null)
+const scrolled = ref(false)
 let editorView = null
 
 function currentContent() {
@@ -41,17 +47,22 @@ function currentContent() {
   return props.modelValue
 }
 
+function onEditorScroll() {
+  if (!editorView) return
+  scrolled.value = editorView.scrollDOM.scrollTop > 60
+}
+
 const themeCompartment = new Compartment()
 const fontSizeCompartment = new Compartment()
 const readOnlyCompartment = new Compartment()
 const langCompartment = new Compartment()
 const placeholderCompartment = new Compartment()
+const wrappingCompartment = new Compartment()
 
 const staticExtensions = [
   lineNumbers(),
   history(),
   keymap.of([...defaultKeymap, ...historyKeymap]),
-  EditorView.lineWrapping,
   EditorView.updateListener.of(update => {
     if (update.docChanged && !props.readOnly) {
       emit('update:modelValue', update.state.doc.toString())
@@ -87,6 +98,10 @@ function placeholderExtensions() {
   return props.placeholder ? cmPlaceholder(props.placeholder) : []
 }
 
+function wrappingExtensions() {
+  return props.lineWrapping ? EditorView.lineWrapping : []
+}
+
 onMounted(() => {
   if (!editorContainer.value) return
   editorView = new EditorView({
@@ -98,14 +113,17 @@ onMounted(() => {
         fontSizeCompartment.of(fontSizeExtensions()),
         readOnlyCompartment.of(readOnlyExtensions()),
         langCompartment.of(langExtensions()),
-        placeholderCompartment.of(placeholderExtensions())
+        placeholderCompartment.of(placeholderExtensions()),
+        wrappingCompartment.of(wrappingExtensions())
       ]
     }),
     parent: editorContainer.value
   })
+  editorView.scrollDOM.addEventListener('scroll', onEditorScroll)
 })
 
 onUnmounted(() => {
+  editorView?.scrollDOM?.removeEventListener('scroll', onEditorScroll)
   editorView?.destroy()
 })
 
@@ -151,6 +169,13 @@ watch(() => props.placeholder, () => {
     effects: placeholderCompartment.reconfigure(placeholderExtensions())
   })
 })
+
+watch(() => props.lineWrapping, () => {
+  if (!editorView) return
+  editorView.dispatch({
+    effects: wrappingCompartment.reconfigure(wrappingExtensions())
+  })
+})
 </script>
 
 <style scoped>
@@ -176,6 +201,12 @@ watch(() => props.placeholder, () => {
 }
 .editor-pane:hover .action-btn-wrap {
   opacity: 1;
+}
+.scroll-top-btn-wrap {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  z-index: 10;
 }
 .editor-pane--error :deep(.cm-content) {
   color: var(--el-color-danger);

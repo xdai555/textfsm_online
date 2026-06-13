@@ -12,7 +12,11 @@ const props = defineProps({
 })
 
 function handleDownload() {
-  ElMessage({ message: '即将开始下载', type: 'info', plain: true })
+  if (!props.content.trim()) {
+    ElMessage({ message: '暂无内容可下载保存', type: 'info', plain: true })
+    return
+  }
+  ElMessage({ message: '即将下载保存', type: 'info', plain: true })
   setTimeout(() => {
     const ts = new Date().toISOString().replace(/[-T:.]/g, '').slice(0, 14)
     const dot = props.filename.lastIndexOf('.')

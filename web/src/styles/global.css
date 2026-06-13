@@ -14,7 +14,8 @@ html.dark body {
 
 /* 去掉选择框圆角 */
 :root {
-  --el-border-radius-base: 0;
+  --el-border-radius-base: 4px;
+  --el-dialog-font-size: 15px;
 }
 
 .splitpanes.default-theme .splitpanes__pane {

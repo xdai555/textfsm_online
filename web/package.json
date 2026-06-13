@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:cloud": "vite --mode cloud",
     "build": "vite build",
+    "build:cloud": "vite build --mode cloud",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -24,8 +26,6 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.0",
-    "vite": "^6.0.0",
-    "unplugin-vue-components": "^0.27.0",
-    "unplugin-auto-import": "^0.17.0"
+    "vite": "^6.0.0"
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="app-header-wrap">
-      <AppHeader />
+      <AppHeader ref="appHeaderRef" @open-book-promo="openBookPromo" />
     </div>
     <el-main>
       <EditorLayout />
@@ -9,18 +9,43 @@
     <el-footer>
       <AppFooter />
     </el-footer>
+    <ShareDialog />
+    <BookPromoDialog v-if="enableBookPromo" ref="bookPromoRef" />
+    <HeaderTour
+      :layout-btn="appHeaderRef?.layoutBtn"
+      :font-size-area="appHeaderRef?.fontSizeArea"
+      :share-btn="appHeaderRef?.shareBtn"
+    />
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useTemplateStore } from '../stores/template'
+import { useShareStore } from '../stores/share'
 import AppHeader from '../components/AppHeader.vue'
 import EditorLayout from '../components/EditorLayout.vue'
 import AppFooter from '../components/AppFooter.vue'
+import ShareDialog from '../components/ShareDialog.vue'
+import BookPromoDialog from '../components/BookPromoDialog.vue'
+import HeaderTour from '../components/HeaderTour.vue'
+import { enableBookPromo } from '../utils/feature'
 
 const templateStore = useTemplateStore()
-onMounted(() => templateStore.fetchSourceList())
+const shareStore = useShareStore()
+const bookPromoRef = ref(null)
+const appHeaderRef = ref(null)
+
+onMounted(() => {
+  templateStore.fetchSourceList()
+
+  shareStore.initFromURL()
+  if (shareStore.currentShareId) shareStore.loadShareData()
+})
+
+function openBookPromo() {
+  if (bookPromoRef.value) bookPromoRef.value.open()
+}
 </script>
 
 <style scoped>

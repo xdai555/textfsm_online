@@ -52,19 +52,10 @@
     </div>
 
     <div class="header-right">
-      <el-tooltip :content="themeTooltip" placement="bottom">
-        <button class="icon-btn" @click="editorStore.toggleTheme()">
-          <transition name="theme-icon" mode="out-in">
-            <el-icon v-if="editorStore.mode === 'system'" key="system"><Monitor /></el-icon>
-            <el-icon v-else-if="editorStore.mode === 'light'" key="sun"><Sunny /></el-icon>
-            <el-icon v-else key="moon"><Moon /></el-icon>
-          </transition>
-        </button>
-      </el-tooltip>
-      <button class="icon-btn" @click="editorStore.horizontal = !editorStore.horizontal">
+      <button ref="layoutBtn" class="icon-btn" @click="editorStore.horizontal = !editorStore.horizontal">
         <el-icon><Rank /></el-icon>
       </button>
-      <div class="font-size-ctrl">
+      <div ref="fontSizeArea" class="font-size-ctrl">
         <button class="icon-btn"
           @click="editorStore.fontSize = Math.max(10, editorStore.fontSize - 1)">
           <el-icon><ZoomOut /></el-icon>
@@ -84,18 +75,48 @@
           <el-icon><ZoomIn /></el-icon>
         </button>
       </div>
+      <el-tooltip :content="themeTooltip" placement="bottom">
+        <button class="icon-btn" @click="editorStore.toggleTheme()">
+          <transition name="theme-icon" mode="out-in">
+            <el-icon v-if="editorStore.mode === 'system'" key="system"><Monitor /></el-icon>
+            <el-icon v-else-if="editorStore.mode === 'light'" key="sun"><Sunny /></el-icon>
+            <el-icon v-else key="moon"><Moon /></el-icon>
+          </transition>
+        </button>
+      </el-tooltip>
+      <el-tooltip content="生成分享链接" placement="bottom">
+        <button ref="shareBtn" class="icon-btn" @click="shareStore.openShareDialog()">
+          <el-icon><Share /></el-icon>
+        </button>
+      </el-tooltip>
+      <el-tooltip v-if="enableBookPromo" content="书籍推荐" placement="bottom">
+        <button class="icon-btn" @click="emit('openBookPromo')">
+          <el-icon><Reading /></el-icon>
+        </button>
+      </el-tooltip>
     </div>
   </el-card>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { InfoFilled, Rank, ZoomOut, ZoomIn, Sunny, Moon, Monitor } from '@element-plus/icons-vue'
+import { InfoFilled, Rank, ZoomOut, ZoomIn, Sunny, Moon, Monitor, Share, Reading } from '@element-plus/icons-vue'
 import { useTemplateStore } from '../stores/template'
 import { useEditorStore } from '../stores/editor'
+import { useShareStore } from '../stores/share'
+import { enableBookPromo } from '../utils/feature'
 
 const templateStore = useTemplateStore()
 const editorStore = useEditorStore()
+const shareStore = useShareStore()
+
+const layoutBtn = ref(null)
+const fontSizeArea = ref(null)
+const shareBtn = ref(null)
+
+defineExpose({ layoutBtn, fontSizeArea, shareBtn })
+
+const emit = defineEmits(['openBookPromo'])
 
 const themeTooltip = computed(() => {
   const labels = { system: '跟随系统', light: '浅色', dark: '深色' }
@@ -208,16 +229,6 @@ function commitFontSize() {
 }
 .icon-btn .el-icon {
   font-size: 18px;
-}
-.icon-btn--sm {
-  width: 24px;
-  height: 24px;
-}
-.icon-btn--sm svg,
-.icon-btn--sm .el-icon {
-  width: 14px;
-  height: 14px;
-  font-size: 14px;
 }
 .font-size-ctrl {
   display: flex;

@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    :title="shareStore.dialogMode === 'link' ? '分享链接' : '分享选项'"
+    :title="shareStore.dialogMode === 'link' ? t('share.titleLink') : t('share.titleOption')"
     v-model="shareStore.dialogVisible"
     width="520px"
     :close-on-click-modal="false"
@@ -14,8 +14,8 @@
         </template>
       </el-input>
       <div class="share-time">
-        <span>创建时间：<el-text tag="span">{{ formatLocalTime(shareStore.createdAt) }}</el-text></span>
-        <span>过期时间：<el-text type="danger" tag="span">{{ formatLocalTime(shareStore.expiresAt) }}</el-text></span>
+        <span>{{ t('share.createdAt') }}<el-text tag="span">{{ formatLocalTime(shareStore.createdAt) }}</el-text></span>
+        <span>{{ t('share.expiresAt') }}<el-text type="danger" tag="span">{{ formatLocalTime(shareStore.expiresAt) }}</el-text></span>
       </div>
       <el-alert
         type="warning"
@@ -24,26 +24,26 @@
         class="share-alert"
       >
         <template #default>
-          <span class="share-alert-text">分享链接仅用于临时存储，任何持有链接的人都可查看或更新内容，请勿分享给非信任用户。</span>
+          <span class="share-alert-text">{{ t('share.alertText') }}</span>
         </template>
       </el-alert>
     </template>
 
     <template v-else>
-      <p class="share-option-desc">您正在查看一个分享链接，可以选择以下操作：</p>
+      <p class="share-option-desc">{{ t('share.optionDesc') }}</p>
       <el-space direction="vertical" :size="8" fill class="share-option-btns">
         <el-button type="primary" @click="shareStore.updateCurrentShare()">
-          更新当前链接（覆盖内容 · 延长7天）
+          {{ t('share.updateBtn') }}
         </el-button>
         <el-button type="success" @click="shareStore.createNewShare()">
-          创建新链接（生成全新链接）
+          {{ t('share.createBtn') }}
         </el-button>
       </el-space>
     </template>
 
     <template #footer v-if="shareStore.dialogMode === 'link'">
       <div class="dialog-footer">
-        <el-button type="primary" @click="shareStore.closeShareDialog()">确定</el-button>
+        <el-button type="primary" @click="shareStore.closeShareDialog()">{{ t('share.confirmBtn') }}</el-button>
       </div>
     </template>
   </el-dialog>
@@ -52,14 +52,18 @@
 <script setup>
 import { useShareStore } from '../stores/share'
 import CopyButton from './CopyButton.vue'
+import { useI18n } from 'vue-i18n'
+import { getCurrentLocale } from '../i18n'
 
+const { t } = useI18n()
 const shareStore = useShareStore()
 
 function formatLocalTime(dateTimeStr) {
-  if (!dateTimeStr) return '未知'
+  if (!dateTimeStr) return t('share.timeUnknown')
   const d = new Date(dateTimeStr + 'Z')
-  if (isNaN(d.getTime())) return '无效时间'
-  return d.toLocaleString('zh-CN', {
+  if (isNaN(d.getTime())) return t('share.timeInvalid')
+  const appLocale = getCurrentLocale()
+  return d.toLocaleString(appLocale === 'en' ? 'en-US' : 'zh-CN', {
     year: 'numeric', month: '2-digit', day: '2-digit',
     hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
   })

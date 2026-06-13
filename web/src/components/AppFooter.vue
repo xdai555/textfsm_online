@@ -10,11 +10,21 @@
       <a href="https://netaxe.github.io/" target="_blank">@iflytek/NetAxe：国产网络自动化领域解决方案框架</a>
       <span class="footer-sep">|</span>
       <a href="https://support.qq.com/products/447487/" target="_blank">意见反馈</a>
+      <span class="footer-sep">|</span>
+      <a class="lang-switch" @click="toggleLocale">{{ locale === 'en' ? '中文' : 'English' }}</a>
     </span>
   </div>
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+import { setLocale } from '../i18n'
+
+const { locale } = useI18n()
+
+function toggleLocale() {
+  setLocale(locale.value === 'en' ? 'zh-CN' : 'en')
+}
 </script>
 
 <style scoped>
@@ -32,6 +42,7 @@
   display: inline-flex;
   align-items: center;
   gap: 3px;
+  cursor: pointer;
 }
 .footer-links a:hover {
   color: var(--el-color-primary);

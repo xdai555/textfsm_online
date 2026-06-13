@@ -2,26 +2,26 @@
   <el-tour v-model="open" :mask="{ color: 'rgba(0,0,0,0.15)' }" @close="onClose" @finish="onClose">
     <el-tour-step
       :target="layoutBtn"
-      title="布局切换"
-      description="点击切换编辑器的水平与垂直分栏布局"
+      :title="t('tour.layoutTitle')"
+      :description="t('tour.layoutDesc')"
       placement="bottom"
     />
     <el-tour-step
       :target="wrapBtn"
-      title="自动换行"
-      description="切换编辑器是否自动换行，关闭后可横向滚动查看长行"
+      :title="t('tour.wrapTitle')"
+      :description="t('tour.wrapDesc')"
       placement="bottom"
     />
     <el-tour-step
       :target="fontSizeArea"
-      title="字号调整"
-      description="点击数字直接修改字号，或使用加减按钮微调"
+      :title="t('tour.fontSizeTitle')"
+      :description="t('tour.fontSizeDesc')"
       placement="bottom"
     />
     <el-tour-step
       :target="shareBtn"
-      title="分享链接"
-      description="生成临时分享链接，与他人共享你的模板和解析结果"
+      :title="t('tour.shareTitle')"
+      :description="t('tour.shareDesc')"
       placement="bottom"
     />
   </el-tour>
@@ -29,6 +29,9 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   layoutBtn: { type: Object, default: null },

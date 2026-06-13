@@ -1,5 +1,5 @@
 <template>
-  <el-tooltip v-model:visible="tipVisible" content="Back to top" placement="top">
+  <el-tooltip v-model:visible="tipVisible" :content="t('scrollTop')" placement="top">
     <el-button class="scroll-top-btn" :icon="ArrowUp" size="small" text bg circle @click="handleScrollTop" />
   </el-tooltip>
 </template>
@@ -7,6 +7,9 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { ArrowUp } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   editorView: { type: Object, default: null },

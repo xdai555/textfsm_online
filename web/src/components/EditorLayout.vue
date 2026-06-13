@@ -4,7 +4,7 @@
       <el-card shadow="never" class="editor-card">
         <EditorPane
           v-model="templateStore.rawText"
-          placeholder="请输入原始 CLI 内容"
+          :placeholder="t('editor.placeholderRaw')"
           :is-dark="editorStore.isDark"
           :font-size="editorStore.fontSize"
           :line-wrapping="editorStore.lineWrapping"
@@ -17,7 +17,7 @@
       <el-card shadow="never" class="editor-card">
         <EditorPane
           v-model="templateStore.templateText"
-          placeholder="请输入 TextFSM 模板内容"
+          :placeholder="t('editor.placeholderTemplate')"
           :is-dark="editorStore.isDark"
           :font-size="editorStore.fontSize"
           :line-wrapping="editorStore.lineWrapping"
@@ -31,7 +31,7 @@
       <el-card shadow="never" class="editor-card" :class="{ 'editor-card--error': templateStore.parseError }">
         <EditorPane
           :model-value="templateStore.result"
-          placeholder="尚未匹配到结果..."
+          :placeholder="t('editor.placeholderResult')"
           :read-only="true"
           :is-dark="editorStore.isDark"
           :font-size="editorStore.fontSize"
@@ -50,7 +50,9 @@ import { Splitpanes, Pane } from 'splitpanes'
 import EditorPane from './EditorPane.vue'
 import { useTemplateStore } from '../stores/template'
 import { useEditorStore } from '../stores/editor'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const templateStore = useTemplateStore()
 const editorStore = useEditorStore()
 </script>

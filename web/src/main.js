@@ -7,9 +7,11 @@ import 'splitpanes/dist/splitpanes.css'
 import './styles/global.css'
 import App from './App.vue'
 import IconGithub from './components/icons/IconGithub.vue'
+import i18n from './i18n'
 
 const app = createApp(App)
 app.use(createPinia())
+app.use(i18n)
 app.use(ElementPlus)
 app.component('IconGithub', IconGithub)
 app.mount('#app')

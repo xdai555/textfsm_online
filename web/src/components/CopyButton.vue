@@ -5,6 +5,9 @@
 <script setup>
 import { ElMessage } from 'element-plus'
 import { CopyDocument } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   content: { type: String, default: '' }
@@ -23,7 +26,7 @@ async function handleCopy() {
     document.execCommand('copy')
     ta.remove()
   }
-  ElMessage({ message: '已复制', type: 'success', plain: true })
+  ElMessage({ message: t('copy.copied'), type: 'success', plain: true })
 }
 </script>
 

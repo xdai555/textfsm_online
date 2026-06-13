@@ -5,10 +5,7 @@
     <div class="header-center">
       <el-tooltip placement="bottom" effect="light">
         <template #content>
-          ntc-templates: 由 <a href="https://github.com/networktocode/ntc-templates" target="_blank">@networktocode</a>主导的网络设备TextFSM开源模板库<br/>
-          Elinpf: ntc-templates 的分支仓库，由 <a href="https://github.com/Elinpf/ntc-templates" target="_blank">@Elinpf</a>更新的国内主流厂商TextFSM模板<br/>
-          <br/>
-          两者在支持的模板数量、具体的模板内容上会有差异，请根据实际情况使用或者修改
+          <span v-html="t('header.tooltipSourceInfo')"></span>
         </template>
         <el-icon class="info-icon" size="16"><InfoFilled /></el-icon>
       </el-tooltip>
@@ -19,7 +16,7 @@
         placeholder="Source"
         class="header-select"
         :loading="templateStore.listLoading"
-        @focus="templateStore.sourceOptions.length === 0 && templateStore.fetchSourceList()"
+        @focus="templateStore.sourceOptions?.length === 0 && templateStore.fetchSourceList()"
         @change="templateStore.fetchPlatformList()"
       >
         <el-option v-for="item in templateStore.sourceOptions" :key="item" :label="item" :value="item" />
@@ -31,7 +28,7 @@
         placeholder="Platform"
         class="header-select"
         :loading="templateStore.listLoading"
-        @focus="templateStore.sourceValue && templateStore.platformOptions.length === 0 && templateStore.fetchPlatformList()"
+        @focus="templateStore.sourceValue && templateStore.platformOptions?.length === 0 && templateStore.fetchPlatformList()"
         @change="templateStore.fetchTemplateList()"
       >
         <el-option v-for="item in templateStore.platformOptions" :key="item" :label="item" :value="item" />
@@ -40,11 +37,11 @@
       <el-select
         v-model="templateStore.templateValue"
         filterable
-        placeholder="TextFSM 模板"
+        :placeholder="t('header.placeholderTemplate')"
         class="header-select header-select--wide"
-        no-data-text="请先选择 Platform"
+        :no-data-text="t('header.noDataPlatform')"
         :loading="templateStore.listLoading"
-        @focus="templateStore.platformValue && templateStore.templateOptions.length === 0 && templateStore.fetchTemplateList()"
+        @focus="templateStore.platformValue && templateStore.templateOptions?.length === 0 && templateStore.fetchTemplateList()"
         @change="templateStore.fetchLoadTemplate()"
       >
         <el-option v-for="item in templateStore.templateOptions" :key="item" :label="item" :value="item" />
@@ -52,12 +49,12 @@
     </div>
 
     <div class="header-right">
-      <el-tooltip :content="editorStore.horizontal ? '切换为垂直布局' : '切换为水平布局'" placement="bottom">
+      <el-tooltip :content="editorStore.horizontal ? t('header.tooltipSwitchLayoutV') : t('header.tooltipSwitchLayoutH')" placement="bottom">
         <button ref="layoutBtn" class="icon-btn" @click="editorStore.horizontal = !editorStore.horizontal">
           <el-icon><Rank /></el-icon>
         </button>
       </el-tooltip>
-      <el-tooltip :content="editorStore.lineWrapping ? '关闭自动换行' : '开启自动换行'" placement="bottom">
+      <el-tooltip :content="editorStore.lineWrapping ? t('header.tooltipToggleWrapOff') : t('header.tooltipToggleWrapOn')" placement="bottom">
         <button ref="wrapBtn" class="icon-btn" @click="editorStore.lineWrapping = !editorStore.lineWrapping">
           <transition name="icon-swap" mode="out-in">
             <IconWordWrap :key="editorStore.lineWrapping" :wrap="editorStore.lineWrapping" />
@@ -69,7 +66,7 @@
           @click="editorStore.fontSize = Math.max(10, editorStore.fontSize - 1)">
           <el-icon><ZoomOut /></el-icon>
         </button>
-        <el-tooltip content="点击修改字号" placement="bottom">
+        <el-tooltip :content="t('header.tooltipFontSize')" placement="bottom">
           <button class="font-size-value"
           @click="editFontSize"
           @blur="commitFontSize"
@@ -93,20 +90,19 @@
           </transition>
         </button>
       </el-tooltip>
-      <el-tooltip content="生成分享链接" placement="bottom">
+      <el-tooltip :content="t('header.tooltipShare')" placement="bottom">
         <button ref="shareBtn" class="icon-btn" @click="shareStore.openShareDialog()">
           <el-icon><Share /></el-icon>
         </button>
       </el-tooltip>
-      <el-tooltip v-if="enableBookPromo" content="书籍推荐" placement="bottom">
+      <el-tooltip v-if="enableBookPromo" :content="t('header.tooltipBookPromo')" placement="bottom">
         <button class="icon-btn" @click="emit('openBookPromo')">
           <el-icon><Reading /></el-icon>
         </button>
       </el-tooltip>
       <el-tooltip placement="bottom" effect="light">
         <template #content>
-          - 本站点支持本地部署，点击查看：<a href="https://github.com/xdai555/textfsm_online" target="_blank">GitHub</a>、<a href="https://gitee.com/xdai555/textfsm_online" target="_blank">Gitee</a><br/>
-          - 编辑窗口间的分割条支持拖动和双击
+          <span v-html="t('header.tooltipGithubInfo')"></span>
         </template>
         <a href="https://github.com/xdai555/textfsm_online" target="_blank" class="icon-btn">
           <el-icon><IconGithub /></el-icon>
@@ -124,7 +120,9 @@ import { useEditorStore } from '../stores/editor'
 import { useShareStore } from '../stores/share'
 import { enableBookPromo } from '../utils/feature'
 import IconWordWrap from './icons/IconWordWrap.vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const templateStore = useTemplateStore()
 const editorStore = useEditorStore()
 const shareStore = useShareStore()
@@ -139,7 +137,11 @@ defineExpose({ layoutBtn, wrapBtn, fontSizeArea, shareBtn })
 const emit = defineEmits(['openBookPromo'])
 
 const themeTooltip = computed(() => {
-  const labels = { system: '跟随系统', light: '浅色', dark: '深色' }
+  const labels = {
+    system: t('header.themeSystem'),
+    light: t('header.themeLight'),
+    dark: t('header.themeDark')
+  }
   return labels[editorStore.mode]
 })
 

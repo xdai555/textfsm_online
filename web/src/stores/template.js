@@ -3,6 +3,7 @@ import { ref, watch } from 'vue'
 import { useDebounceFn } from '@vueuse/shared'
 import { ElMessage } from 'element-plus'
 import { fetchList, parseTextFSM } from '../api'
+import { t } from '../i18n'
 
 const STORAGE_KEYS = {
   rawText: 'textfsm_raw_text',
@@ -61,24 +62,24 @@ export const useTemplateStore = defineStore('template', () => {
       optionsRef.value = await fetchList(apiPath, params, dataKey)
     } catch {
       optionsRef.value = []
-      ElMessage.error(errorMsg)
+      ElMessage.error(typeof errorMsg === 'function' ? errorMsg() : errorMsg)
     } finally {
       listLoading.value = false
     }
   }
 
   function fetchSourceList() {
-    return loadList('/getSourceList', null, 'source_list', sourceOptions, '加载 Source 列表失败')
+    return loadList('/getSourceList', null, 'source_list', sourceOptions, () => t('template.errorLoadSource'))
   }
 
   function fetchPlatformList() {
     if (!sourceValue.value) return
-    return loadList('/getPlatformList', { source: sourceValue.value }, 'platform_list', platformOptions, '加载 Platform 列表失败')
+    return loadList('/getPlatformList', { source: sourceValue.value }, 'platform_list', platformOptions, () => t('template.errorLoadPlatform'))
   }
 
   function fetchTemplateList() {
     if (!platformValue.value || !sourceValue.value) return
-    return loadList('/getTemplateList', { platform: platformValue.value, source: sourceValue.value }, 'template_list', templateOptions, '加载 Template 列表失败')
+    return loadList('/getTemplateList', { platform: platformValue.value, source: sourceValue.value }, 'template_list', templateOptions, () => t('template.errorLoadTemplate'))
   }
 
   async function fetchLoadTemplate() {
@@ -87,7 +88,7 @@ export const useTemplateStore = defineStore('template', () => {
     try {
       templateText.value = await fetchList('/loadTemplate', { template: templateValue.value, source: sourceValue.value }, 'content')
     } catch {
-      ElMessage.error('加载模板内容失败')
+      ElMessage.error(t('template.errorLoadContent'))
     } finally {
       listLoading.value = false
     }
@@ -111,8 +112,8 @@ export const useTemplateStore = defineStore('template', () => {
       }
     } catch {
       parseError.value = true
-      result.value = '网络错误，请检查后端服务'
-      ElMessage.error('解析请求失败')
+      result.value = t('template.errorNetwork')
+      ElMessage.error(t('template.errorParse'))
     } finally {
       parseLoading.value = false
     }

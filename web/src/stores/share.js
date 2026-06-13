@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { createShare, updateShare, getShare } from '../api'
 import { useTemplateStore } from './template'
 import { ElMessage } from 'element-plus'
+import { t } from '../i18n'
 
 export const useShareStore = defineStore('share', () => {
   const currentShareId = ref(null)
@@ -28,7 +29,7 @@ export const useShareStore = defineStore('share', () => {
     try {
       const data = await getShare(currentShareId.value)
       if (data.error) {
-        ElMessage.error('分享链接不存在或已过期')
+        ElMessage.error(t('shareStore.errorNotFound'))
         return
       }
       const ts = useTemplateStore()
@@ -41,7 +42,7 @@ export const useShareStore = defineStore('share', () => {
       expiresAt.value = data.expires_at
       if (ts.platformValue && ts.sourceValue) ts.fetchTemplateList()
     } catch {
-      ElMessage.error('加载分享数据出错')
+      ElMessage.error(t('shareStore.errorLoad'))
     }
   }
 
@@ -86,10 +87,10 @@ export const useShareStore = defineStore('share', () => {
       if (data?.share_id) {
         _onShareSuccess(data, payload)
       } else {
-        ElMessage.error('生成分享链接失败，请重试')
+        ElMessage.error(t('shareStore.errorCreate'))
       }
     } catch {
-      ElMessage.error('生成分享链接失败，请重试')
+      ElMessage.error(t('shareStore.errorCreate'))
     }
   }
 
@@ -101,11 +102,11 @@ export const useShareStore = defineStore('share', () => {
       if (data?.share_id) {
         _onShareSuccess(data, payload)
       } else {
-        ElMessage.error('更新分享链接失败')
+        ElMessage.error(t('shareStore.errorUpdate'))
         dialogVisible.value = false
       }
     } catch {
-      ElMessage.error('更新分享链接失败')
+      ElMessage.error(t('shareStore.errorUpdate'))
       dialogVisible.value = false
     }
   }

@@ -5,6 +5,9 @@
 <script setup>
 import { Download } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   content: { type: String, default: '' },
@@ -13,10 +16,10 @@ const props = defineProps({
 
 function handleDownload() {
   if (!props.content.trim()) {
-    ElMessage({ message: '暂无内容可下载保存', type: 'info', plain: true })
+    ElMessage({ message: t('download.noContent'), type: 'info', plain: true })
     return
   }
-  ElMessage({ message: '即将下载保存', type: 'info', plain: true })
+  ElMessage({ message: t('download.starting'), type: 'info', plain: true })
   setTimeout(() => {
     const ts = new Date().toISOString().replace(/[-T:.]/g, '').slice(0, 14)
     const dot = props.filename.lastIndexOf('.')

@@ -1,27 +1,10 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import 'element-plus/theme-chalk/dark/css-vars.css'
+import 'splitpanes/dist/splitpanes.css'
+import './styles/global.css'
 import App from './App.vue'
-import router from './router'
-import VueCodemirror from 'vue-codemirror'
-import { Container, Footer, Switch, Col, Main, Select, Option, Button, InputNumber, Tooltip } from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
-// import ElementUI from 'element-ui'
 
-Vue.use(VueCodemirror)
-Vue.use(Container)
-Vue.use(Main)
-Vue.use(Footer)
-Vue.use(Switch)
-Vue.use(Col)
-Vue.use(Select)
-Vue.use(Option)
-Vue.use(Button)
-Vue.use(InputNumber)
-Vue.use(Tooltip)
-// Vue.use(ElementUI)
-
-Vue.config.productionTip = false
-
-new Vue({
-  router,
-  render: h => h(App)
-}).$mount('#app')
+const app = createApp(App)
+app.use(createPinia())
+app.mount('#app')

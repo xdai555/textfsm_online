@@ -1,8 +1,9 @@
 <template>
-  <div id="app" style="height: 100%;">
-    <router-view/>
-  </div>
+  <el-config-provider :size="'small'">
+    <HomeView />
+  </el-config-provider>
 </template>
 
-<style>
-</style>
+<script setup>
+import HomeView from './views/HomeView.vue'
+</script>

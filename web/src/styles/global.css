@@ -1,0 +1,48 @@
+html, body {
+  margin: 0;
+  height: 100%;
+  background-color: #f5f5f5;
+}
+
+html.dark body {
+  background-color: #141414;
+}
+
+#app {
+  height: 100%;
+}
+
+/* 去掉选择框圆角 */
+:root {
+  --el-border-radius-base: 0;
+}
+
+.splitpanes.default-theme .splitpanes__pane {
+  background-color: transparent;
+}
+
+/* 分割线：3px 间距，缩进避免冲出圆角 */
+.default-theme.splitpanes--vertical > .splitpanes__splitter,
+.default-theme .splitpanes--vertical > .splitpanes__splitter {
+  width: 3px !important;
+  min-width: 3px !important;
+  border-left: none !important;
+  margin-left: 0 !important;
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
+  background-color: transparent !important;
+}
+.default-theme.splitpanes--horizontal > .splitpanes__splitter,
+.default-theme .splitpanes--horizontal > .splitpanes__splitter {
+  height: 3px !important;
+  min-height: 3px !important;
+  border-top: none !important;
+  margin-top: 0 !important;
+  margin-left: 10px !important;
+  margin-right: 10px !important;
+  background-color: transparent !important;
+}
+.splitpanes.default-theme .splitpanes__splitter:before,
+.splitpanes.default-theme .splitpanes__splitter:after {
+  content: none !important;
+}

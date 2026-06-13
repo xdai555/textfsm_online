@@ -1,0 +1,19 @@
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude / Superpowers (local tooling)
+.claude/
+.superpowers/
+docs/
+
+# Lock files (project uses bun)
+**/package-lock.json
+CLAUDE.md
